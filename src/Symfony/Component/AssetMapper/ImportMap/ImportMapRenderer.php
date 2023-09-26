@@ -25,7 +25,7 @@ use Symfony\Component\WebLink\Link;
  *
  * @final
  */
-class ImportMapRenderer
+class ImportMapRenderer implements ImportMapRendererInterface
 {
     private const DEFAULT_ES_MODULE_SHIMS_POLYFILL_URL = 'https://ga.jspm.io/npm:es-module-shims@1.8.0/dist/es-module-shims.js';
 

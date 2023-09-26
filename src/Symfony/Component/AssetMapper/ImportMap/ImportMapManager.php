@@ -206,8 +206,10 @@ class ImportMapManager
 
     /**
      * Finds the MappedAsset allowing for a "logical path", relative or absolute filesystem path.
+     *
+     * @internal
      */
-    private function findAsset(string $path): ?MappedAsset
+    public function findAsset(string $path): ?MappedAsset
     {
         if ($asset = $this->assetMapper->getAsset($path)) {
             return $asset;

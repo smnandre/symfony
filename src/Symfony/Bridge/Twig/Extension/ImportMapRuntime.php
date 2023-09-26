@@ -11,14 +11,14 @@
 
 namespace Symfony\Bridge\Twig\Extension;
 
-use Symfony\Component\AssetMapper\ImportMap\ImportMapRenderer;
+use Symfony\Component\AssetMapper\ImportMap\ImportMapRendererInterface;
 
 /**
  * @author Kévin Dunglas <kevin@dunglas.dev>
  */
 class ImportMapRuntime
 {
-    public function __construct(private readonly ImportMapRenderer $importMapRenderer)
+    public function __construct(private readonly ImportMapRendererInterface $importMapRenderer)
     {
     }
 

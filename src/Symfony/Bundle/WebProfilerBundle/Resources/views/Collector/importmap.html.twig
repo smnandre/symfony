@@ -1,0 +1,63 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block head %}
+    {{ parent() }}
+
+    <style>
+    </style>
+{% endblock %}
+
+{% block toolbar %}
+    {% if collector.wasImportMapRendered %}
+        {% set icon %}
+            {{ source('@WebProfiler/Icon/serializer.svg') }}
+            <span class="sf-toolbar-value">
+                {% if collector.entryPoints|length == 1 %}
+                    {{ collector.entryPointNames[0] }}
+                {% else %}
+                    {{ collector.entryPoints|length }} entrypoints
+                {% endif %}
+            </span>
+        {% endset %}
+
+        {% set text %}
+            <div class="sf-toolbar-info-piece">
+                <b>Importmap</b>
+            </div>
+            <div class="sf-toolbar-info-piece">
+                <b>Entrypoints:</b>
+                <span>{{ collector.entryPointNames|join(', ') }}</span>
+            </div>
+            <div class="sf-toolbar-info-piece">
+                <b>CSS Link Tags</b>
+                <span>{{ collector.cssLinkTags|length }}</span>
+            </div>
+            <div class="sf-toolbar-info-piece">
+                <b>Preloaded JavaScript</b>
+                <span>{{ collector.preloadedScripts|length }}</span>
+            </div>
+        {% endset %}
+
+        {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: profiler_url }) }}
+    {% endif %}
+{% endblock %}
+
+{% block menu %}
+    <span class="label {{ not collector.wasImportMapRendered ? 'disabled' }}">
+        <span class="icon">{{ source('@WebProfiler/Icon/serializer.svg') }}</span>
+        <strong>Importmap</strong>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    <h2>Importmap</h2>
+    <div class="sf-serializer sf-reset">
+        {% if not collector.wasImportMapRendered %}
+            <div class="empty empty-panel">
+                <p>The importmap was not rendered during this request.</p>
+            </div>
+        {% else %}
+            TODO
+        {% endif %}
+    </div>
+{% endblock %}

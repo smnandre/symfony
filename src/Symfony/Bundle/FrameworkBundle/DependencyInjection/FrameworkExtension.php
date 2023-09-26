@@ -897,6 +897,10 @@ class FrameworkExtension extends Extension
             $loader->load('serializer_debug.php');
         }
 
+        if ($this->isInitializedConfigEnabled('asset_mapper')) {
+            $loader->load('asset_mapper_debug.php');
+        }
+
         $container->setParameter('profiler_listener.only_exceptions', $config['only_exceptions']);
         $container->setParameter('profiler_listener.only_main_requests', $config['only_main_requests']);
 
