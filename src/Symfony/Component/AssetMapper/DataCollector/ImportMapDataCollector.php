@@ -25,17 +25,24 @@ class ImportMapDataCollector extends DataCollector
 
     public function collect(Request $request, Response $response, \Throwable $exception = null): void
     {
-        $this->data['import_map_rendered'] = $this->importMapRenderer->wasImportMapRendered();
+        $this->data = [
+            'import_map_rendered' => $this->importMapRenderer->wasImportMapRendered(),
+            'entrypoints' => [],
+            'entrypoint_assets' => [],
+            'raw_importmap_data' => [],
+            'final_importmap_data' => [],
+        ];
         if (!$this->data['import_map_rendered']) {
             return;
         }
 
         $this->data['entrypoints'] = $this->importMapRenderer->getEntryPointNames();
         $this->data['entrypoint_assets'] = $this->collectEntrypointAssets($this->data['entrypoints']);
+        //
+        //$this->data['raw_importmap_data'] = $this->importMapManager->getRawImportMapData();
+        //$this->data['final_importmap_data'] = $this->importMapManager->getImportMapData($this->data['entrypoints']);
 
-        $this->data['raw_importmap_data'] = $this->importMapManager->getRawImportMapData();
-        $this->data['final_importmap_data'] = $this->importMapManager->getImportMapData($this->data['entrypoints']);
-        dump($this->data);
+        $this->data =array_map($this->getDependencies(...), $this->data['entrypoint_assets']);
     }
 
     public function wasImportMapRendered(): bool
@@ -43,6 +50,26 @@ class ImportMapDataCollector extends DataCollector
         return $this->data['import_map_rendered'];
     }
 
+    /**
+     * @return array<string, array{path: string, type: string, preload?: bool}>
+     * @internal
+     */
+    public function getFinalImportMapData() {
+        return $this->data['final_importmap_data'];
+    }
+
+    /**
+     * @return array<string, array{path: string, type: string}>
+     * @internal
+     */
+    public function getRawImportMapData(): array
+    {
+        return $this->data['raw_importmap_data'];
+    }
+
+    /**
+     * @return string[]
+     */
     public function getEntryPoints(): array
     {
         return $this->data['entrypoints'];
@@ -51,6 +78,41 @@ class ImportMapDataCollector extends DataCollector
     /**
      * @return MappedAsset[]
      */
+    public function getEntryPointAssets(): array
+    {
+        return $this->data['entrypoint_assets'];
+    }
+
+    /**
+     */
+    public function getTree(): array
+    {
+        return $this->data['tree'];
+    }
+
+    public function getDependencies(MappedAsset $asset): array
+    {
+        $dependencies = [];
+
+        foreach ($asset->getJavaScriptImports() as $import) {
+            if ($import->isLazy) {
+                $dependencies[$import->importName]['loading'] = 'lazy';
+                continue;
+            }
+
+            $dependencies[$import->importName]['loading'] = 'eager';
+
+            if ($import->asset instanceof MappedAsset) {
+                $dependencies[$import->importName]['imports'] = $this->getDependencies($import->asset);
+            }
+        }
+
+        return $dependencies;
+    }
+
+    /**
+     * @return string[]
+     */
     public function getEntryPointNames(): array
     {
         $entrypoints = [];
@@ -58,6 +120,7 @@ class ImportMapDataCollector extends DataCollector
             $asset = $this->data['entrypoint_assets'][$entrypoint];
             if (!$asset) {
                 $entrypoints[] = $entrypoint;
+                continue;
             }
 
             $entrypoints[] = basename($asset->logicalPath);
@@ -66,6 +129,9 @@ class ImportMapDataCollector extends DataCollector
         return $entrypoints;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getCssLinkTags(): array
     {
         $linkTags = [];
@@ -78,6 +144,9 @@ class ImportMapDataCollector extends DataCollector
         return $linkTags;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getPreloadedScripts(): array
     {
         $preloadedScripts = [];

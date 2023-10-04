@@ -7,34 +7,73 @@
     </style>
 {% endblock %}
 
+{% block javascripts %}
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            new SymfonyProfilerImportmapPanel();
+        });
+
+        class SymfonyProfilerImportmapPanel {
+            constructor() {
+                this.#initDependencyGraphs();
+            }
+            #initDependencyGraphs() {
+                const dependencyGraphs = document.querySelectorAll('.importmap-dependency-graph');
+                if (dependencyGraphs) {
+                    dependencyGraphs.forEach((graph) => this.#initDependencyGraph(graph));
+                }
+            }
+            #initDependencyGraph(graph) {
+                const searchInput = graph.querySelector('input[type="search"]');
+                if (!searchInput) {
+                    return
+                }
+                const table = graph.querySelector('table');
+                searchInput.addEventListener('input', () => this.#filterTable(table, searchInput.value.toLowerCase()))
+            }
+            #filterTable(table, term) {
+                const rows = table.querySelectorAll('tbody tr')
+                rows.forEach((row) => {
+                    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+                })
+            }
+        }
+</script>
+{% endblock %}
+
 {% block toolbar %}
     {% if collector.wasImportMapRendered %}
         {% set icon %}
-            {{ source('@WebProfiler/Icon/serializer.svg') }}
+            {{ source('@WebProfiler/Icon/importmap.svg') }}
             <span class="sf-toolbar-value">
                 {% if collector.entryPoints|length == 1 %}
                     {{ collector.entryPointNames[0] }}
                 {% else %}
-                    {{ collector.entryPoints|length }} entrypoints
+                    {{ collector.entryPoints|length }}
                 {% endif %}
             </span>
         {% endset %}
 
         {% set text %}
-            <div class="sf-toolbar-info-piece">
-                <b>Importmap</b>
-            </div>
-            <div class="sf-toolbar-info-piece">
-                <b>Entrypoints:</b>
-                <span>{{ collector.entryPointNames|join(', ') }}</span>
+            <div class="sf-toolbar-info-piece" style="display: flex;justify-content: space-between;">
+                <b>Entrypoints</b>
+                <span>
+                {% for name, asset in collector.entryPointAssets %}
+                    <a href="{{ asset.sourcePath|file_link(1) }}" title="{{ name }}">
+                        {{ asset.logicalPath }}
+                    </a>
+                    {% if not loop.last %}<br />{% endif %}
+                {% endfor %}
+                </span>
+{#                <span>{{ collector.entryPointNames|join(', ') }}</span>#}
             </div>
             <div class="sf-toolbar-info-piece">
                 <b>CSS Link Tags</b>
-                <span>{{ collector.cssLinkTags|length }}</span>
+                <span class="sf-toolbar-status">{{ collector.cssLinkTags|length }}</span>
             </div>
             <div class="sf-toolbar-info-piece">
                 <b>Preloaded JavaScript</b>
-                <span>{{ collector.preloadedScripts|length }}</span>
+                <span class="sf-toolbar-status">{{ collector.preloadedScripts|length }}</span>
             </div>
         {% endset %}
 
@@ -44,20 +83,211 @@
 
 {% block menu %}
     <span class="label {{ not collector.wasImportMapRendered ? 'disabled' }}">
-        <span class="icon">{{ source('@WebProfiler/Icon/serializer.svg') }}</span>
+        <span class="icon">{{ source('@WebProfiler/Icon/importmap.svg') }}</span>
         <strong>Importmap</strong>
     </span>
 {% endblock %}
 
 {% block panel %}
     <h2>Importmap</h2>
-    <div class="sf-serializer sf-reset">
-        {% if not collector.wasImportMapRendered %}
-            <div class="empty empty-panel">
-                <p>The importmap was not rendered during this request.</p>
+
+    {% if not collector.wasImportMapRendered %}
+        <div class="empty empty-panel">
+            <p>No importmap rendered during this request.</p>
+        </div>
+    {% else %}
+
+
+        {{ dump(collector.getTree) }}
+
+
+        {% macro tree_node(collector, epAsset) %}
+            <div class="node">
+                <p>{{ epAsset.importName }}</p>
+
+                {% if epAsset.sourcePath %}
+{#                    {% set children = collector.findEagerImports(epAsset)|default %}#}
+{#                    {% if children %}#}
+{#                        <div class="children">#}
+{#                            {% for child in children %}#}
+{#                                {{ child.importName }}#}
+{#                                {{ _self.tree_node(collector, child) }}#}
+{#                            {% endfor %}#}
+{#                        </div>#}
+{#                    {% endif %}#}
+                {% endif %}
             </div>
-        {% else %}
-            TODO
-        {% endif %}
-    </div>
+        {% endmacro %}
+
+        {% for epAsset in collector.getEntryPointAssets %}
+            <div style="margin: 2rem 0;">
+                {{ dump(epAsset) }}
+{#                {{ _self.tree_node(collector, epAsset) }}#}
+            </div>
+        {% endfor %}
+
+
+        <div class="sf-tabs">
+            <div class="tab">
+                <h3 class="tab-title">Preloads</h3>
+                <div class="tab-content">
+                    {{ _self.importmap_metrics(collector) }}
+                    <h4>Javascript preloads</h4>
+                    {% if 0 == collector.preloadedScripts|length %}
+                        <div class="empty"><p>No JS preload script</p></div>
+                    {% else %}
+                        {{ _self.importmap_preload_table(collector.preloadedScripts) }}
+                    {% endif %}
+                    <h4>CSS preloads</h4>
+                    {% if 0 == collector.cssLinkTags|length %}
+                        <div class="empty"><p>No CSS preload link</p></div>
+                    {% else %}
+                        {{ _self.importmap_preload_table(collector.cssLinkTags) }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="tab">
+                {% set _import_map = collector.getFinalImportMapData() %}
+                <h3 class="tab-title">Rendered importmap</h3>
+                <div class="tab-content">
+                    {{ _self.importmap_data_table(_import_map) }}
+                </div>
+            </div>
+            <div class="tab">
+                {% set _import_map = collector.getRawImportMapData() %}
+                <h3 class="tab-title">Config importmap.php</h3>
+                <div class="tab-content">
+                    {{ _self.importmap_data_table(_import_map) }}
+                </div>
+            </div>
+        </div>
+
+        <h2>Dependency graph</h2>
+        <div class="importmap-dependency-graph">
+            <form>
+                <input type="search" name="s">
+                <button type="reset">Clear</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Import</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% macro asset_dependencies(collector, mappedAsset, depth = 0, parent = null) %}
+                        <tr style="--depth: {{ depth }};">
+                            <td>
+                                {%- if depth -%}
+                                    <span class="text-muted" style="margin-left: calc(var(--depth) * 15px);margin-right: 5px;">L</span>
+                                {%- endif -%}
+                                <a href="{{ mappedAsset.sourcePath|file_link(1) }}">
+                                    {{ mappedAsset.logicalPath }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ mappedAsset.publicPath }}">
+                                    {{ mappedAsset.publicPath }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% for import in mappedAsset.javaScriptImports %}
+                            {% if not import.isLazy %}
+                                {% if import.asset %}
+                                    {{ _self.asset_dependencies(collector, import.asset, depth + 1, mappedAsset.logicalPath) }}
+                                {% else %}
+                                    <tr style="--depth: {{ depth + 1 }};">
+                                        <td>
+                                            <span class="text-muted"
+                                                  style="margin-left: calc(var(--depth) * 15px);margin-right: 5px;">L</span>
+                                            {{ import.importName }}
+                                        </td>
+                                        <td>
+                                            {{ collector.finalImportMapData[import.importName].path|default }}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endmacro %}
+
+                    {% for entry_name, entry_asset in collector.entryPointAssets %}
+                        {{ _self.asset_dependencies(collector, entry_asset) }}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% endif %}
 {% endblock %}
+
+
+{% macro importmap_metrics(collector) %}
+    <div class="metrics">
+
+        <div class="metric-group">
+            {% for name, entrypoint in collector.getEntrypointAssets() %}
+                <div class="metric">
+                    <span class="value">{{ entrypoint.logicalPath }}</span>
+                    <span class="label">Entrypoint</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="metric-divider"></div>
+
+        <div class="metric-group">
+            <div class="metric">
+                <span class="value">{{ collector.getCssLinkTags|length }}</span>
+                <span class="label">CSS links</span>
+            </div>
+            <div class="metric">
+                <span class="value">{{ collector.getPreloadedScripts|length }}</span>
+                <span class="label">JS scripts</span>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro importmap_preload_table(items) %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Asset</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for name, value in items %}
+            <tr>
+                <th scope="row">{{ name }}</th>
+                <td>{{ dump(value) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro importmap_data_table(data) %}
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Preload</th>
+                <th>Path</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in data %}
+                <tr>
+                    <td>{{ value.type }}</td>
+                    <td>{{ key }} {% if value.entrypoint|default %}[ENTRYPOINT]{% endif %}</td>
+                    <td>{% if value.preload|default %}<small class="badge">PRELOAD</small>{% endif %}</td>
+                    <td>{{ dump(value.path) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
