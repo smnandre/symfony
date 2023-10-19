@@ -25,20 +25,25 @@ class ImportMapDataCollector extends DataCollector
 
     public function collect(Request $request, Response $response, \Throwable $exception = null): void
     {
-        $this->data = [
-            'import_map_rendered' => $this->importMapRenderer->wasImportMapRendered(),
-            'entrypoints' => [],
-            'entrypoint_assets' => [],
-            'raw_importmap_data' => [],
-            'final_importmap_data' => [],
-        ];
-        if (!$this->data['import_map_rendered']) {
+        if (!$this->importMapRenderer->wasImportMapRendered()) {
+            $this->data = [
+                'import_map_rendered' => false,
+            ];
             return;
         }
 
-        $this->data['entrypoints'] = $this->importMapRenderer->getEntryPointNames();
-        $this->data['entrypoint_assets'] = $this->collectEntrypointAssets($this->data['entrypoints']);
-        //
+        $entrypoints = $this->importMapRenderer->getEntryPointNames();
+
+        $this->data = [
+            'import_map_rendered' => true,
+            'entrypoints' => $entrypoints,
+            'entrypoint_assets' => $this->collectEntrypointAssets($entrypoints),
+            'raw_importmap_data' => [],
+            'final_importmap_data' => [],
+        ];
+
+        return;
+
         //$this->data['raw_importmap_data'] = $this->importMapManager->getRawImportMapData();
         //$this->data['final_importmap_data'] = $this->importMapManager->getImportMapData($this->data['entrypoints']);
 
@@ -47,7 +52,7 @@ class ImportMapDataCollector extends DataCollector
 
     public function wasImportMapRendered(): bool
     {
-        return $this->data['import_map_rendered'];
+        return $this->data['import_map_rendered'] ?? false;
     }
 
     /**
@@ -55,7 +60,7 @@ class ImportMapDataCollector extends DataCollector
      * @internal
      */
     public function getFinalImportMapData() {
-        return $this->data['final_importmap_data'];
+        return $this->data['final_importmap_data'] ?? [];
     }
 
     /**
@@ -64,7 +69,7 @@ class ImportMapDataCollector extends DataCollector
      */
     public function getRawImportMapData(): array
     {
-        return $this->data['raw_importmap_data'];
+        return $this->data['raw_importmap_data'] ?? [];
     }
 
     /**
@@ -72,7 +77,7 @@ class ImportMapDataCollector extends DataCollector
      */
     public function getEntryPoints(): array
     {
-        return $this->data['entrypoints'];
+        return $this->data['entrypoints'] ?? [];
     }
 
     /**
@@ -80,7 +85,7 @@ class ImportMapDataCollector extends DataCollector
      */
     public function getEntryPointAssets(): array
     {
-        return $this->data['entrypoint_assets'];
+        return $this->data['entrypoint_assets'] ?? [];
     }
 
     /**

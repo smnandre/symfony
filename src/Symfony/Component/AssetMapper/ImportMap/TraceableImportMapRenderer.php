@@ -16,7 +16,7 @@ namespace Symfony\Component\AssetMapper\ImportMap;
  */
 class TraceableImportMapRenderer implements ImportMapRendererInterface
 {
-    private array $entryPointNames;
+    private array $entryPointNames = [];
 
     public function __construct(private ImportMapRendererInterface $importMapRenderer)
     {

@@ -46,11 +46,7 @@
         {% set icon %}
             {{ source('@WebProfiler/Icon/importmap.svg') }}
             <span class="sf-toolbar-value">
-                {% if collector.entryPoints|length == 1 %}
-                    {{ collector.entryPointNames[0] }}
-                {% else %}
-                    {{ collector.entryPoints|length }}
-                {% endif %}
+                {{ collector.entryPoints|length == 1 }}
             </span>
         {% endset %}
 
@@ -93,12 +89,9 @@
 
     {% if not collector.wasImportMapRendered %}
         <div class="empty empty-panel">
-            <p>No importmap rendered during this request.</p>
+            <p>No importmap was rendered.</p>
         </div>
     {% else %}
-
-
-        {{ dump(collector.getTree) }}
 
 
         {% macro tree_node(collector, epAsset) %}
