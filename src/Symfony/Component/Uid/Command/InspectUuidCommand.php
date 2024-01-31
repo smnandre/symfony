@@ -62,7 +62,7 @@ EOF
         } elseif (new MaxUuid() == $uuid) {
             $version = 'max';
         } else {
-            $version = uuid_type($uuid);
+            $version = hexdec($uuid->toRfc4122()[14]);
         }
 
         $rows = [
