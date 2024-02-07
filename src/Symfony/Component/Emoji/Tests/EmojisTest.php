@@ -39,4 +39,17 @@ class EmojisTest extends TestCase
         $this->assertNotContains('Dollar', Emojis::getEmojis());
         $this->assertNotContains('à', Emojis::getEmojis());
     }
+
+    public function testGetCountryFlags()
+    {
+        $flags = Emojis::getCountryFlags();
+
+        $this->assertContains('🇫🇷', $flags);
+        $this->assertContains('🇺🇸', $flags);
+        $this->assertContains('🇮🇹', $flags);
+        $this->assertContains('🇯🇵', $flags);
+
+        $this->assertNotContains('🍕', $flags);
+    }
+
 }

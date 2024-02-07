@@ -19,35 +19,85 @@ use Symfony\Component\Emoji\Util\GzipStreamWrapper;
  */
 final class Emojis
 {
+    public const GROUP_SMILEY_EMOTION = 'Smileys & Emotion';
+    public const GROUP_PEOPLE_BODY = 'People & Body';
+    public const GROUP_ANIMAL_NATURE = 'Animals & Nature';
+    public const GROUP_FOOD_DRINK = 'Food & Drink';
+    public const GROUP_TRAVEL_PLACE = 'Travel & Places';
+    public const GROUP_ACTIVITIES = 'Activities';
+    public const GROUP_OBJECTS = 'Objects';
+    public const GROUP_SYMBOLS = 'Symbols';
+    public const GROUP_FLAGS = 'Flags';
+
+    private static array $subGroups;
+
     /**
      * Checks if an emoji exists.
      */
     public static function exists(string $emoji): bool
     {
-        foreach (self::getEmojis() as $value) {
-            if ($emoji === $value) {
-                return true;
-            }
-        }
+        return in_array($emoji, self::getEmojis(), true);
+    }
 
-        return false;
+    public static function getCountryFlags(): array
+    {
+        return self::getGroup(self::GROUP_FLAGS)['country-flag'];
     }
 
     /**
      * Returns all available emojis.
      *
-     * @return iterable<string>
+     * @return array<string>
      */
-    public static function getEmojis(): iterable
+    public static function getEmojis(): array
     {
-        $dataFile = __DIR__.'/Resources/data/emoji-en.php';
-        if (!is_file($dataFile) && !is_file($dataFile.'.gz')) {
-            throw new \RuntimeException(sprintf('The emoji data file "%s" does not exist.', $dataFile));
+        $dataFile = __DIR__.'/Resources/data/emojis.php';
+        $emojis = is_file($dataFile) ? require $dataFile : GzipStreamWrapper::require($dataFile.'.gz');
+
+        return $emojis;
+    }
+
+    public static function getGroups(): array
+    {
+        return [
+            self::GROUP_SMILEY_EMOTION,
+            self::GROUP_PEOPLE_BODY,
+            self::GROUP_ANIMAL_NATURE,
+            self::GROUP_FOOD_DRINK,
+            self::GROUP_TRAVEL_PLACE,
+            self::GROUP_ACTIVITIES,
+            self::GROUP_OBJECTS,
+            self::GROUP_SYMBOLS,
+            self::GROUP_FLAGS,
+        ];
+    }
+
+    /**
+     * @param string $group
+     * @return array
+     */
+    public static function getEmojiSubgroups(string $group): array
+    {
+        if (!in_array($group, self::getGroups(), true)) {
+            throw new \InvalidArgumentException(sprintf('The group "%s" does not exist.', $group));
         }
 
-        $emojis = is_file($dataFile) ? require $dataFile : GzipStreamWrapper::require($dataFile.'.gz');
-        foreach ($emojis as $emoji => $name) {
-            yield $emoji;
-        }
+        return self::$subGroups[$group] ??= array_keys(self::getGroup($group));
+    }
+
+    private static function getGroup(string $group): array
+    {
+        return self::loadGroups()[$group] ?? throw new \InvalidArgumentException(sprintf('The group "%s" does not exist.', $group));
+    }
+
+    private static function loadGroups(): array
+    {
+        $dataFile = __DIR__.'/Resources/data/emoji_groups.php';
+        $groups = is_file($dataFile) ? require $dataFile : GzipStreamWrapper::require($dataFile.'.gz');
+
+        // Build the groups/subgroups
+        self::$subGroups ??= array_map(array_keys(...), $groups);
+
+        return $groups;
     }
 }

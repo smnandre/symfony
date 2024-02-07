@@ -17,6 +17,8 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\VarExporter\VarExporter;
 
 Builder::cleanTarget();
+Builder::buildEmojiList();
+Builder::buildEmojiGroups();
 $emojisCodePoints = Builder::getEmojisCodePoints();
 Builder::saveRules(Builder::buildRules($emojisCodePoints));
 Builder::saveRules(Builder::buildStripRules($emojisCodePoints));
@@ -27,28 +29,61 @@ final class Builder
 {
     private const TARGET_DIR = __DIR__.'/../data/';
 
-    public static function getEmojisCodePoints(): array
+    /**
+     * Fetches the emojis from the latest `emoji-test.txt` file.
+     *
+     * Per default:
+     *  - all emojis are included (including 'minimally-qualified' and 'unqualified' ones)
+     *  - every emoji containing a 'Zero Width Joiner' is also included without.
+     *
+     * When $rgiStrict is set to true, only the "Recommended for General Interchange" emojis are included.
+     */
+    public static function getEmojisCodePoints(bool $rgiStrict = false, bool $grouped = false): array
     {
         $lines = file(__DIR__.'/vendor/emoji-test.txt');
 
+        $group = null;
+        $subgroup = null;
         $emojisCodePoints = [];
         foreach ($lines as $line) {
             $line = trim($line);
+            if (str_starts_with($line, '# group: ')) {
+                $group = substr($line, 9);
+                $subgroup = null;
+            }
+            if (str_starts_with($line, '# subgroup: ')) {
+                $subgroup = substr($line, 12);
+            }
             if (!$line || str_starts_with($line, '#')) {
                 continue;
             }
 
             // 263A FE0F    ; fully-qualified     # ☺️ E0.6 smiling face
-            preg_match('{^(?<codePoints>[\w ]+) +; [\w-]+ +# (?<emoji>.+) E\d+\.\d+ ?(?<name>.+)$}Uu', $line, $matches);
+            preg_match('{^(?<codePoints>[\w ]+) +; (?<status>[\w-]+) +# (?<emoji>.+) E\d+\.\d+ ?(?<name>.+)$}Uu', $line, $matches);
             if (!$matches) {
-                throw new \DomainException("Could not parse line: \"$line\".");
+                throw new DomainException("Could not parse line: \"$line\".");
+            }
+            if ($rgiStrict && 'fully-qualified' !== $matches['status']) {
+                continue;
             }
 
             $codePoints = strtolower(trim($matches['codePoints']));
-            $emojisCodePoints[$codePoints] = $matches['emoji'];
+            if ($grouped) {
+                $emojisCodePoints[$group][$subgroup][$codePoints] = $matches['emoji'];
+            } else {
+                $emojisCodePoints[$codePoints] = $matches['emoji'];
+            }
+            if ($rgiStrict) {
+                continue;
+            }
+
             // We also add a version without the "Zero Width Joiner"
             $codePoints = str_replace('200d ', '', $codePoints);
-            $emojisCodePoints[$codePoints] = $matches['emoji'];
+            if ($grouped) {
+                $emojisCodePoints[$group][$subgroup][$codePoints] = $matches['emoji'];
+            } else {
+                $emojisCodePoints[$codePoints] = $matches['emoji'];
+            }
         }
 
         return $emojisCodePoints;
@@ -62,8 +97,7 @@ final class Builder
                 __DIR__.'/vendor/unicode-org/cldr/common/annotationsDerived',
                 __DIR__.'/vendor/unicode-org/cldr/common/annotations',
             ])
-            ->name('*.xml')
-        ;
+            ->name('*.xml');
 
         $ignored = [];
         $mapsByLocale = [];
@@ -167,7 +201,7 @@ final class Builder
             $emojiCodePoints = str_replace('-', ' ', strtolower($data['unified']));
             $shortCode = $data['short_name'];
             $shortCodes = $data['short_names'];
-            $shortCodes = array_map(fn ($v) => ":$v:", $shortCodes);
+            $shortCodes = array_map(fn($v) => ":$v:", $shortCodes);
 
             if (!array_key_exists($emojiCodePoints, $emojisCodePoints)) {
                 $ignored[] = [
@@ -209,6 +243,19 @@ final class Builder
         $fs = new Filesystem();
         $fs->remove(self::TARGET_DIR);
         $fs->mkdir(self::TARGET_DIR);
+    }
+
+    public static function buildEmojiList(): void
+    {
+        $emojis = array_values(self::getEmojisCodePoints(true,));
+        file_put_contents(self::TARGET_DIR."/emojis.php", "<?php\n\nreturn ".VarExporter::export($emojis).";\n");
+    }
+
+    public static function buildEmojiGroups(): void
+    {
+        $emojiGroups = self::getEmojisCodePoints(true, true);
+        $emojiGroups = array_map(fn($v) => array_map(fn($v) => array_values($v), $v), $emojiGroups);
+        file_put_contents(self::TARGET_DIR.'/emoji_groups.php', "<?php\n\nreturn ".VarExporter::export($emojiGroups).";\n");
     }
 
     public static function saveRules(iterable $rulesByLocale): void
