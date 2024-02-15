@@ -49,7 +49,6 @@ EOF
         $io = new SymfonyStyle($input, $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output);
 
         try {
-            /** @var Uuid $uuid */
             $uuid = Uuid::fromString($input->getArgument('uuid'));
         } catch (\InvalidArgumentException $e) {
             $io->error($e->getMessage());
