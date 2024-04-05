@@ -44,6 +44,14 @@ class RedirectResponseTest extends TestCase
         $this->assertEquals('foo.bar', $response->headers->get('Location'));
     }
 
+    public function testGenerateContentTypeHeader()
+    {
+        $response = new RedirectResponse('foo.bar');
+
+        $this->assertTrue($response->headers->has('Content-Type'));
+        $this->assertEquals('text/html; charset=UTF-8', $response->headers->get('Content-Type'));
+    }
+
     public function testGetTargetUrl()
     {
         $response = new RedirectResponse('foo.bar');
