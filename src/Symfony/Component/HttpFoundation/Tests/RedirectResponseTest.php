@@ -49,7 +49,7 @@ class RedirectResponseTest extends TestCase
         $response = new RedirectResponse('foo.bar');
 
         $this->assertTrue($response->headers->has('Content-Type'));
-        $this->assertEquals('text/html; charset=UTF-8', $response->headers->get('Content-Type'));
+        $this->assertEquals('text/html; charset=utf-8', $response->headers->get('Content-Type'));
     }
 
     public function testGetTargetUrl()
