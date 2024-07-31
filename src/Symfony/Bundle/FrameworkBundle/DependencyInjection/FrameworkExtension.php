@@ -1360,6 +1360,7 @@ class FrameworkExtension extends Extension
         $container
             ->getDefinition('asset_mapper.mapped_asset_factory')
             ->replaceArgument(2, $config['vendor_dir'])
+            ->replaceArgument(3, $config['hash_algorithm'])
         ;
 
         $container

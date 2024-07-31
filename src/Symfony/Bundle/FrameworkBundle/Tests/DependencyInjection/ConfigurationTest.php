@@ -140,6 +140,7 @@ class ConfigurationTest extends TestCase
             'vendor_dir' => '%kernel.project_dir%/assets/vendor',
             'importmap_script_attributes' => [],
             'exclude_dotfiles' => true,
+            'hash_algorithm' => 'xxh128',
         ];
 
         $this->assertEquals($defaultConfig, $config['asset_mapper']);
@@ -820,6 +821,7 @@ class ConfigurationTest extends TestCase
                 'vendor_dir' => '%kernel.project_dir%/assets/vendor',
                 'importmap_script_attributes' => [],
                 'exclude_dotfiles' => true,
+                'hash_algorithm' => 'xxh128',
             ],
             'cache' => [
                 'pools' => [],

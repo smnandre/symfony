@@ -61,6 +61,7 @@ return static function (ContainerConfigurator $container) {
                 service('asset_mapper.public_assets_path_resolver'),
                 service('asset_mapper_compiler'),
                 abstract_arg('vendor directory'),
+                abstract_arg('digest hash algorithm'),
             ])
 
         ->set('asset_mapper.cached_mapped_asset_factory', CachedMappedAssetFactory::class)
