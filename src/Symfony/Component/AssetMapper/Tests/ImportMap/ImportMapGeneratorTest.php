@@ -348,6 +348,7 @@ class ImportMapGeneratorTest extends TestCase
             '/path/to/simple.js',
             publicPathWithoutDigest: '/assets/simple.js',
             publicPath: '/assets/simple-d1g3st.js',
+            integrity: 'simple-integrity',
         );
         yield 'it adds dependency to the importmap' => [
             [
@@ -360,7 +361,7 @@ class ImportMapGeneratorTest extends TestCase
                 new MappedAsset(
                     'app.js',
                     publicPath: '/assets/app-d1g3st.js',
-                    javaScriptImports: [new JavaScriptImport('/assets/simple.js', assetLogicalPath: $simpleAsset->logicalPath, assetSourcePath: $simpleAsset->sourcePath, isLazy: false, addImplicitlyToImportMap: true)]
+                    javaScriptImports: [new JavaScriptImport('/assets/simple.js', assetLogicalPath: $simpleAsset->logicalPath, assetSourcePath: $simpleAsset->sourcePath, isLazy: false, addImplicitlyToImportMap: true)],
                 ),
                 $simpleAsset,
             ],
@@ -372,6 +373,7 @@ class ImportMapGeneratorTest extends TestCase
                 '/assets/simple.js' => [
                     'path' => '/assets/simple-d1g3st.js',
                     'type' => 'js',
+                    'integrity' => 'simple-integrity',
                 ],
             ],
         ];
@@ -401,6 +403,7 @@ class ImportMapGeneratorTest extends TestCase
                 '/assets/simple.js' => [
                     'path' => '/assets/simple-d1g3st.js',
                     'type' => 'js',
+                    'integrity' => 'simple-integrity',
                 ],
             ],
         ];
@@ -440,6 +443,7 @@ class ImportMapGeneratorTest extends TestCase
                 '/assets/simple.js' => [
                     'path' => '/assets/simple-d1g3st.js',
                     'type' => 'js',
+                    'integrity' => 'simple-integrity',
                 ],
             ],
         ];
@@ -472,6 +476,7 @@ class ImportMapGeneratorTest extends TestCase
                 '/assets/simple.js' => [
                     'path' => '/assets/simple-d1g3st.js',
                     'type' => 'js',
+                    'integrity' => 'simple-integrity',
                 ],
                 'imports_simple' => [
                     'path' => '/assets/imports_simple-d1g3st.js',

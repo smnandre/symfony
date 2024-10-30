@@ -36,6 +36,7 @@ class MappedAssetFactoryTest extends TestCase
         $this->assertSame('file2.js', $asset->logicalPath);
         $this->assertMatchesRegularExpression('/^\/final-assets\/file2-[a-zA-Z0-9]{7,128}\.js$/', $asset->publicPath);
         $this->assertSame('/final-assets/file2.js', $asset->publicPathWithoutDigest);
+        $this->assertSame('sha384-ZDljYTViYzY0NTgyZjA4ZTBmMjgwODY1NDNlMmRhMTY2NTVlOTNhYTlkZjMwZGY5YzU0NjdlNDExMThjY2RjNGFmNWZkNDhmZDg0ODIzMmVmMjkyNmIwNGE2NGJkMjdi', $asset->integrity);
     }
 
     public function testCreateMappedAssetRespectsPreDigestedPaths()
@@ -46,11 +47,12 @@ class MappedAssetFactoryTest extends TestCase
         $this->assertSame('/final-assets/already-abcdefVWXYZ0123456789.digested.css', $asset->publicPath);
         // for pre-digested files, the digest *is* part of the public path
         $this->assertSame('/final-assets/already-abcdefVWXYZ0123456789.digested.css', $asset->publicPathWithoutDigest);
+        $this->assertSame('sha384-YThlMTY4MzI3MGY3ZjFlNTk0M2VhMDQ0MzMyYjEwYjRkNGQ2NjU4YzZlMDZjYjA3YTgwNDUzNjUwOTQyOGI4NjQ1YmFiMmIyMzg4ZWZhOGRiMGQ5MjU4MjJjNThlOTkz', $asset->integrity);
     }
 
     public function testCreateMappedAssetWithContentThatChanged()
     {
-        $file1Compiler = new class implements AssetCompilerInterface {
+        $file1Compiler = new class () implements AssetCompilerInterface {
             public function supports(MappedAsset $asset): bool
             {
                 return true;
@@ -81,6 +83,17 @@ class MappedAssetFactoryTest extends TestCase
         $this->assertNull($asset->content);
     }
 
+    public function testCreateMappedAssetComputeIntegrity()
+    {
+        $assetMapper = $this->createFactory();
+
+        $asset = $assetMapper->createMappedAsset('file1.css', __DIR__.'/../Fixtures/dir1/file1.css');
+        $this->assertSame('sha384-XgVLYsLqVK+VujG5zkQyFuRtBc98ql0YRAQYP8CT8paQgxTtAUAdgcvTO9TxlUXp', $asset->integrity);
+
+        $asset = $assetMapper->createMappedAsset('file2.js', __DIR__.'/../Fixtures/dir1/file2.js');
+        $this->assertSame('sha384-2cpbxkWC8I4PKAhlQ+LaFmVek6qd8w35xUZ+QRGMzcSvX9SP2EgjLvKSawSmS9J7', $asset->integrity);
+    }
+
     public function testCreateMappedAssetWithContentErrorsOnCircularReferences()
     {
         $factory = $this->createFactory();
@@ -92,7 +105,7 @@ class MappedAssetFactoryTest extends TestCase
 
     public function testCreateMappedAssetWithDigest()
     {
-        $file6Compiler = new class implements AssetCompilerInterface {
+        $file6Compiler = new class () implements AssetCompilerInterface {
             public function supports(MappedAsset $asset): bool
             {
                 return true;
@@ -119,6 +132,7 @@ class MappedAssetFactoryTest extends TestCase
         $factory = $this->createFactory($file6Compiler);
         $asset = $factory->createMappedAsset('subdir/file6.js', __DIR__.'/../Fixtures/dir2/subdir/file6.js');
         $this->assertSame('7e4f24ebddd4ab2a3bcf0d89270b9f30', $asset->digest);
+        $this->assertSame('sha384-1GNXqZ7KhQjqjTLnfTOAln3lJn8wex5coUWjjZ7DT40GKkCb5XK+P6kNTHjdnXs/', $asset->integrity);
     }
 
     public function testCreateMappedAssetWithPredigested()

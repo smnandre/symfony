@@ -50,7 +50,7 @@ class ImportMapGenerator
     /**
      * @param string[] $entrypointNames
      *
-     * @return array<string, array{path: string, type: string, preload?: bool}>
+     * @return array<string, array{path: string, type: string, preload?: bool, integrity?: string}>
      *
      * @internal
      */
@@ -83,7 +83,7 @@ class ImportMapGenerator
     /**
      * @internal
      *
-     * @return array<string, array{path: string, type: string}>
+     * @return array<string, array{path: string, type: string, integrity?: string}>
      */
     public function getRawImportMapData(): array
     {
@@ -106,6 +106,9 @@ class ImportMapGenerator
 
             $path = $asset->publicPath;
             $data = ['path' => $path, 'type' => $entry->type->value];
+            if ($asset->integrity) {
+                $data['integrity'] = $asset->integrity;
+            }
             $rawImportMapData[$entry->importName] = $data;
         }
 

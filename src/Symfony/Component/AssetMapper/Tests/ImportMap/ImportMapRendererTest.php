@@ -211,4 +211,62 @@ class ImportMapRendererTest extends TestCase
         $this->assertSame(['as' => 'style'], $linkProvider->getLinks()[0]->getAttributes());
         $this->assertSame('/assets/styles/app-preload-d1g35t.css', $linkProvider->getLinks()[0]->getHref());
     }
+
+    public function testIntegrityMap(): void
+    {
+        $importMapGenerator = $this->createMock(ImportMapGenerator::class);
+        $importMapGenerator->expects($this->once())
+            ->method('getImportMapData')
+            ->with(['app'])
+            ->willReturn([
+                'app_js_preload' => [
+                    'path' => '/assets/app-preload-d1g35t.js',
+                    'type' => 'js',
+                    'integrity' => 'sha384-abc123-js',
+                ],
+                'app_js_no_preload' => [
+                    'path' => '/assets/app-no-preload-d1g35t.js',
+                    'type' => 'js',
+                    'integrity' => 'sha384-abc123-js-no',
+                ],
+                'app_css_preload' => [
+                    'path' => '/assets/styles/app-preload-d1g35t.css',
+                    'type' => 'css',
+                    'integrity' => 'sha384-abc123-css',
+                ],
+                'app_css_no_preload' => [
+                    'path' => '/assets/styles/app-nopreload-d1g35t.css',
+                    'type' => 'css',
+                    'integrity' => 'sha384-abc123-css-no'
+                ],
+            ]);
+
+        $assetPackages = $this->createMock(Packages::class);
+        $assetPackages->expects($this->any())
+            ->method('getUrl')
+            ->willReturnCallback(function ($path) {
+                // try to imitate the behavior of the real service
+                if (str_starts_with($path, 'http') || str_starts_with($path, '/')) {
+                    return $path;
+                }
+
+                return '/subdirectory/'.$path;
+            });
+
+        $renderer = new ImportMapRenderer($importMapGenerator, $assetPackages, polyfillImportName: false);
+        $html = $renderer->render(['app']);
+
+        $this->assertStringContainsString(<<<EOTXT
+                "app_js_preload": "/subdirectory/assets/app-preload-d1g35t.js",
+                "app_js_no_preload": "/subdirectory/assets/app-no-preload-d1g35t.js",
+        EOTXT, $html);
+
+        $this->assertStringContainsString(<<<EOTXT
+            "integrity": {
+                "/subdirectory/assets/app-preload-d1g35t.js": "sha384-abc123-js",
+                "/subdirectory/assets/app-no-preload-d1g35t.js": "sha384-abc123-js-no"
+            }
+        EOTXT, $html);
+
+    }
 }

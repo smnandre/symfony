@@ -47,6 +47,7 @@ class ImportMapRenderer
 
         $importMapData = $this->importMapGenerator->getImportMapData($entryPoint);
         $importMap = [];
+        $integrityMap = [];
         $modulePreloads = [];
         $cssLinks = [];
         $polyfillPath = null;
@@ -70,8 +71,12 @@ class ImportMapRenderer
             }
 
             $preload = $data['preload'] ?? false;
+            $integrity = $data['integrity'] ?? null;
             if ('css' !== $data['type']) {
                 $importMap[$importName] = $path;
+                if ($integrity) {
+                    $integrityMap[$path] = $integrity;
+                }
                 if ($preload) {
                     $modulePreloads[] = $path;
                 }
@@ -96,7 +101,7 @@ class ImportMapRenderer
         }
 
         $scriptAttributes = $attributes || $this->scriptAttributes ? ' '.$this->createAttributesString($attributes) : '';
-        $importMapJson = json_encode(['imports' => $importMap], \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_HEX_TAG);
+        $importMapJson = json_encode(['imports' => $importMap, 'integrity' => $integrityMap], \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_HEX_TAG);
         $output .= <<<HTML
 
             <script type="importmap"$scriptAttributes>

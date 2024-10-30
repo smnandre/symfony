@@ -63,6 +63,7 @@ class MappedAssetFactory implements MappedAssetFactoryInterface
                 $asset->getDependencies(),
                 $asset->getFileDependencies(),
                 $asset->getJavaScriptImports(),
+                $this->getIntegrity($asset, $content),
             );
 
             $this->assetsCache[$logicalPath] = $asset;
@@ -71,6 +72,18 @@ class MappedAssetFactory implements MappedAssetFactoryInterface
         unset($this->assetsBeingCreated[$logicalPath]);
 
         return $this->assetsCache[$logicalPath];
+    }
+
+    /**
+     * Returns an SRI integrity hash for the given asset.
+     */
+    private function getIntegrity(MappedAsset $asset, ?string $content): string
+    {
+        if (null !== $content) {
+            return 'sha384-'.base64_encode(hash('sha384', $content, true));
+        }
+
+        return 'sha384-'.base64_encode(hash_file('sha384', $asset->sourcePath, true));
     }
 
     /**
