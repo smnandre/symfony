@@ -52,7 +52,7 @@ class MappedAssetFactoryTest extends TestCase
 
     public function testCreateMappedAssetWithContentThatChanged()
     {
-        $file1Compiler = new class () implements AssetCompilerInterface {
+        $file1Compiler = new class implements AssetCompilerInterface {
             public function supports(MappedAsset $asset): bool
             {
                 return true;
@@ -105,7 +105,7 @@ class MappedAssetFactoryTest extends TestCase
 
     public function testCreateMappedAssetWithDigest()
     {
-        $file6Compiler = new class () implements AssetCompilerInterface {
+        $file6Compiler = new class implements AssetCompilerInterface {
             public function supports(MappedAsset $asset): bool
             {
                 return true;

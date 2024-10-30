@@ -212,7 +212,7 @@ class ImportMapRendererTest extends TestCase
         $this->assertSame('/assets/styles/app-preload-d1g35t.css', $linkProvider->getLinks()[0]->getHref());
     }
 
-    public function testIntegrityMap(): void
+    public function testIntegrityMap()
     {
         $importMapGenerator = $this->createMock(ImportMapGenerator::class);
         $importMapGenerator->expects($this->once())
@@ -237,7 +237,7 @@ class ImportMapRendererTest extends TestCase
                 'app_css_no_preload' => [
                     'path' => '/assets/styles/app-nopreload-d1g35t.css',
                     'type' => 'css',
-                    'integrity' => 'sha384-abc123-css-no'
+                    'integrity' => 'sha384-abc123-css-no',
                 ],
             ]);
 
@@ -267,6 +267,5 @@ class ImportMapRendererTest extends TestCase
                 "/subdirectory/assets/app-no-preload-d1g35t.js": "sha384-abc123-js-no"
             }
         EOTXT, $html);
-
     }
 }
