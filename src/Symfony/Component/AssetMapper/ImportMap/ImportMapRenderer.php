@@ -78,7 +78,7 @@ class ImportMapRenderer
                     $integrityMap[$path] = $integrity;
                 }
                 if ($preload) {
-                    $modulePreloads[] = $path;
+                    $modulePreloads[] = ['path' => $path, 'integrity' => $integrity];
                 }
             } elseif ($preload) {
                 $cssLinks[] = $path;
@@ -142,10 +142,13 @@ class ImportMapRenderer
                 HTML;
         }
 
-        foreach ($modulePreloads as $url) {
-            $url = $this->escapeAttributeValue($url);
+        foreach ($modulePreloads as $modulePreload) {
+            $url = $this->escapeAttributeValue($modulePreload['path']);
+            if ($integrity = $modulePreload['integrity']) {
+                $integrity = " integrity=\"$integrity\"";
+            }
 
-            $output .= "\n<link rel=\"modulepreload\" href=\"$url\">";
+            $output .= "\n<link rel=\"modulepreload\" href=\"$url\"$integrity>";
         }
 
         if (\count($entryPoint) > 0) {
