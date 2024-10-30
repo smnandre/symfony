@@ -36,7 +36,7 @@ class MappedAssetFactoryTest extends TestCase
         $this->assertSame('file2.js', $asset->logicalPath);
         $this->assertMatchesRegularExpression('/^\/final-assets\/file2-[a-zA-Z0-9]{7,128}\.js$/', $asset->publicPath);
         $this->assertSame('/final-assets/file2.js', $asset->publicPathWithoutDigest);
-        $this->assertSame('sha384-ZDljYTViYzY0NTgyZjA4ZTBmMjgwODY1NDNlMmRhMTY2NTVlOTNhYTlkZjMwZGY5YzU0NjdlNDExMThjY2RjNGFmNWZkNDhmZDg0ODIzMmVmMjkyNmIwNGE2NGJkMjdi', $asset->integrity);
+        $this->assertSame('sha384-2cpbxkWC8I4PKAhlQ+LaFmVek6qd8w35xUZ+QRGMzcSvX9SP2EgjLvKSawSmS9J7', $asset->integrity);
     }
 
     public function testCreateMappedAssetRespectsPreDigestedPaths()
@@ -47,7 +47,7 @@ class MappedAssetFactoryTest extends TestCase
         $this->assertSame('/final-assets/already-abcdefVWXYZ0123456789.digested.css', $asset->publicPath);
         // for pre-digested files, the digest *is* part of the public path
         $this->assertSame('/final-assets/already-abcdefVWXYZ0123456789.digested.css', $asset->publicPathWithoutDigest);
-        $this->assertSame('sha384-YThlMTY4MzI3MGY3ZjFlNTk0M2VhMDQ0MzMyYjEwYjRkNGQ2NjU4YzZlMDZjYjA3YTgwNDUzNjUwOTQyOGI4NjQ1YmFiMmIyMzg4ZWZhOGRiMGQ5MjU4MjJjNThlOTkz', $asset->integrity);
+        $this->assertSame('sha384-qOFoMnD38eWUPqBEMysQtNTWZYxuBssHqARTZQlCi4ZFurKyOI76jbDZJYIsWOmT', $asset->integrity);
     }
 
     public function testCreateMappedAssetWithContentThatChanged()
