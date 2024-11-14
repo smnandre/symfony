@@ -185,4 +185,20 @@ class MappedAssetFactoryTest extends TestCase
 
         return $factory;
     }
+
+    public function testIsVendorWhenVendorDirDoesNotExists()
+    {
+        $pathResolver = $this->createMock(PublicAssetsPathResolverInterface::class);
+        $compiler = $this->createMock(AssetMapperCompiler::class);
+
+        $factory = new MappedAssetFactory(
+            $pathResolver,
+            $compiler,
+            '/foo/bar/baz',
+        );
+
+        $method = (new \ReflectionClass($factory))->getMethod('isVendor');
+
+        $this->assertFalse($method->invoke($factory, '/'));
+    }
 }
