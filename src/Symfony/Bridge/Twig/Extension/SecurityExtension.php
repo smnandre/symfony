@@ -53,14 +53,10 @@ final class SecurityExtension extends AbstractExtension
         }
     }
 
-    public function isGrantedForUser(UserInterface $user, mixed $attribute, mixed $subject = null, ?string $field = null): bool
+    public function isGrantedForUser(UserInterface $user, mixed $attribute, mixed $subject = null): bool
     {
         if (!$this->userSecurityChecker) {
             throw new \LogicException(\sprintf('An instance of "%s" must be provided to use "%s()".', UserAuthorizationCheckerInterface::class, __METHOD__));
-        }
-
-        if ($field) {
-            $subject = new FieldVote($subject, $field);
         }
 
         return $this->userSecurityChecker->isGrantedForUser($user, $attribute, $subject);
