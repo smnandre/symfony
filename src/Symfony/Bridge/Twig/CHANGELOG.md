@@ -5,6 +5,7 @@ CHANGELOG
 ---
 
  * Add `is_granted_for_user()` Twig function
+ * Deprecate passing a third argument to the `is_granted()` Twig function
 
 7.2
 ---
