@@ -41,7 +41,7 @@ final class SecurityExtension extends AbstractExtension
         }
 
         if (null !== $field) {
-            trigger_deprecation('symfony/twig-bridge', '7.3', 'Passing a "field" argument to the "is_granted" Twig function is deprecated. It will be removed in version 8.0.');
+            trigger_deprecation('symfony/twig-bridge', '7.3', 'Passing the "$field" argument to the "is_granted" Twig function is deprecated and will be removed in version 8.0.');
 
             $object = new FieldVote($object, $field);
         }
