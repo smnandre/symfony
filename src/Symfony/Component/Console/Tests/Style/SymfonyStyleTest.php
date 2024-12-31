@@ -154,6 +154,22 @@ class SymfonyStyleTest extends TestCase
         $style->createTable()->appendRow(['row']);
     }
 
+    public function testCreateTreeWithoutConsoleOutput()
+    {
+        $input = $this->createMock(InputInterface::class);
+        $output = $this->createMock(OutputInterface::class);
+        $output
+            ->method('getFormatter')
+            ->willReturn(new OutputFormatter());
+
+        $style = new SymfonyStyle($input, $output);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Output should be an instance of "Symfony\Component\Console\Output\ConsoleSectionOutput"');
+
+        $style->createTree('foo');
+    }
+
     public function testGetErrorStyleUsesTheCurrentOutputIfNoErrorOutputIsAvailable()
     {
         $output = $this->createMock(OutputInterface::class);

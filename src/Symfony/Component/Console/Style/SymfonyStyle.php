@@ -11,6 +11,9 @@
 
 namespace Symfony\Component\Console\Style;
 
+use Iterator;
+use IteratorIterator;
+use RecursiveTreeIterator;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -21,6 +24,10 @@ use Symfony\Component\Console\Helper\SymfonyQuestionHelper;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
+use Symfony\Component\Console\Helper\Tree;
+use Symfony\Component\Console\Helper\TreeBuilder;
+use Symfony\Component\Console\Helper\TreeNode;
+use Symfony\Component\Console\Helper\TreeStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
@@ -30,6 +37,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Terminal;
+use Traversable;
 
 /**
  * Output decorator helpers for the Symfony Style Guide.
@@ -282,7 +290,8 @@ class SymfonyStyle extends OutputStyle
      * @template TValue
      *
      * @param iterable<TKey, TValue> $iterable
-     * @param int|null               $max      Number of steps to complete the bar (0 if indeterminate), if null it will be inferred from $iterable
+     * @param int|null               $max      Number of steps to complete the bar (0 if indeterminate), if null it
+     *                                         will be inferred from $iterable
      *
      * @return iterable<TKey, TValue>
      */
@@ -367,6 +376,29 @@ class SymfonyStyle extends OutputStyle
     {
         return $this->progressBar
             ?? throw new RuntimeException('The ProgressBar is not started.');
+    }
+
+    public function createTree(string|TreeNode|array|Iterator $node = null): Tree
+    {
+        $output = $this->output instanceof ConsoleOutputInterface
+            ? $this->output->section()
+            : $this->output;
+
+        return new Tree($output, $node);
+    }
+
+    public function tree(TreeNode|Iterator|array $nodes): void
+    {
+        if (\is_array($nodes)) {
+            $nodes = TreeBuilder::fromArray($nodes);
+        } elseif ($nodes instanceof Iterator) {
+            $nodes = TreeBuilder::fromIterator($nodes);
+        } elseif (!$nodes instanceof TreeNode) {
+            throw new InvalidArgumentException('The nodes should be an array, an instance of TreeNode or an instance of Iterator.');
+        }
+
+        $tree = new Tree($this->output, $nodes, TreeStyle::default());
+        $tree->render();
     }
 
     private function autoPrependBlock(): void
