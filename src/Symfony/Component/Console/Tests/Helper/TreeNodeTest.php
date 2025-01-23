@@ -16,7 +16,7 @@ use Symfony\Component\Console\Helper\TreeNode;
 
 class TreeNodeTest extends TestCase
 {
-    public function testNodeInitialization(): void
+    public function testNodeInitialization()
     {
         $node = new TreeNode('Root');
         $this->assertSame('Root', $node->getValue());
@@ -24,7 +24,7 @@ class TreeNodeTest extends TestCase
         $this->assertTrue($node->isLeaf());
     }
 
-    public function testAddingChildren(): void
+    public function testAddingChildren()
     {
         $root = new TreeNode('Root');
         $child = new TreeNode('Child');
@@ -36,7 +36,7 @@ class TreeNodeTest extends TestCase
         $this->assertSame($child, $root->getChildren()[0]);
     }
 
-    public function testRecursiveStructure(): void
+    public function testRecursiveStructure()
     {
         $root = new TreeNode('Root');
         $child1 = new TreeNode('Child 1');
