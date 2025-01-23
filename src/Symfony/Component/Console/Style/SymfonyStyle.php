@@ -11,9 +11,6 @@
 
 namespace Symfony\Component\Console\Style;
 
-use Iterator;
-use IteratorIterator;
-use RecursiveTreeIterator;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -37,7 +34,6 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Terminal;
-use Traversable;
 
 /**
  * Output decorator helpers for the Symfony Style Guide.
@@ -378,7 +374,7 @@ class SymfonyStyle extends OutputStyle
             ?? throw new RuntimeException('The ProgressBar is not started.');
     }
 
-    public function createTree(string|TreeNode|array|Iterator $node = null): Tree
+    public function createTree(string|TreeNode|array|\Iterator|null $node = null): Tree
     {
         $output = $this->output instanceof ConsoleOutputInterface
             ? $this->output->section()
@@ -387,11 +383,11 @@ class SymfonyStyle extends OutputStyle
         return new Tree($output, $node);
     }
 
-    public function tree(TreeNode|Iterator|array $nodes): void
+    public function tree(TreeNode|\Iterator|array $nodes): void
     {
         if (\is_array($nodes)) {
             $nodes = TreeBuilder::fromArray($nodes);
-        } elseif ($nodes instanceof Iterator) {
+        } elseif ($nodes instanceof \Iterator) {
             $nodes = TreeBuilder::fromIterator($nodes);
         } elseif (!$nodes instanceof TreeNode) {
             throw new InvalidArgumentException('The nodes should be an array, an instance of TreeNode or an instance of Iterator.');

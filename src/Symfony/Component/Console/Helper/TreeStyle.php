@@ -131,7 +131,7 @@ final class TreeStyle
     public static function style(string $name): self
     {
         if (!isset(self::STYLES[$name])) {
-            throw new \InvalidArgumentException(\sprintf('Invalid style name "%s". Available styles: %s.', $name, implode(', ', array_keys(self::STYLES))));
+            throw new \InvalidArgumentException(\sprintf('Invalid style name "%s". Available styles: "%s".', $name, implode(', ', array_keys(self::STYLES))));
         }
 
         return new self(...self::STYLES[$name]);
