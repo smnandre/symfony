@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author Simon André <smn.andre@gmail.com>
  */
-class Tree implements \RecursiveIterator
+final class Tree implements \RecursiveIterator
 {
     private TreeStyle $style;
 
@@ -69,7 +69,7 @@ class Tree implements \RecursiveIterator
 
     public function hasChildren(): bool
     {
-        return !empty($this->current()->getChildren());
+        return [] !== $this->current()->getChildren();
     }
 
     public function getChildren(): \RecursiveIterator

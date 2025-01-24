@@ -128,7 +128,7 @@ final class TreeStyle
         return self::style(self::STYLE_ROUNDED);
     }
 
-    public static function style(string $name): self
+    private static function style(string $name): self
     {
         if (!isset(self::STYLES[$name])) {
             throw new \InvalidArgumentException(\sprintf('Invalid style name "%s". Available styles: "%s".', $name, implode(', ', array_keys(self::STYLES))));

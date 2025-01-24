@@ -165,14 +165,6 @@ root
 TREE, trim($output->fetch()));
     }
 
-    public function testInvalidStyleThrowsException()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid style name "invalid_style". Available styles: default, box, compact, frame, light, minimal, rounded.');
-
-        TreeStyle::style('invalid_style');
-    }
-
     public function testCreateStyle()
     {
         $style = new TreeStyle('A ', 'B ', 'C ', 'D ', 'E ', 'F ');
