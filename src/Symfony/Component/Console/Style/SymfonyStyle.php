@@ -374,7 +374,7 @@ class SymfonyStyle extends OutputStyle
             ?? throw new RuntimeException('The ProgressBar is not started.');
     }
 
-    public function createTree(string|TreeNode|array|\Iterator|null $node = null): Tree
+    public function createTree(TreeNode|array|\Iterator|null $node = null): Tree
     {
         $output = $this->output instanceof ConsoleOutputInterface
             ? $this->output->section()
