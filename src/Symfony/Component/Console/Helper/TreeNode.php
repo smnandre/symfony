@@ -59,7 +59,7 @@ final class TreeNode implements \Countable, \IteratorAggregate, \Stringable
     /**
      * @return iterable<TreeNode>
      */
-    public function getChildren(): array
+    public function getChildren(): iterable
     {
         return $this->children;
     }
@@ -67,7 +67,7 @@ final class TreeNode implements \Countable, \IteratorAggregate, \Stringable
     /**
      * @return \RecursiveArrayIterator<TreeNode>
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): \RecursiveArrayIterator
     {
         return new class($this->children) extends \RecursiveArrayIterator {
             public function hasChildren(): bool
