@@ -20,12 +20,10 @@ final class TreeNode implements \Countable, \IteratorAggregate, \Stringable
 {
     private readonly string $value;
 
-    private ?self $parent;
-
     /**
      * @var array<self>
      */
-    private array $children = [];
+    private array $children;
 
     public function __construct(
         ?string $value = null,
@@ -33,13 +31,12 @@ final class TreeNode implements \Countable, \IteratorAggregate, \Stringable
         array $children = [],
     ) {
         $this->value = $value ?? '';
-        if (null !== $parent) {
+        if ($parent) {
             $parent->addChild($this);
         }
         foreach ($children as $child) {
             $this->addChild($child);
         }
-        $this->parent = $parent;
         $this->children = $children;
     }
 
@@ -59,32 +56,12 @@ final class TreeNode implements \Countable, \IteratorAggregate, \Stringable
         return $this;
     }
 
-    public function addChildren(self|\Iterator ...$children): self
-    {
-        foreach ($children as $child) {
-            if ($child instanceof self) {
-                $this->addChild($child);
-            } elseif ($child instanceof \Iterator) {
-                foreach ($child as $node) {
-                    $this->addChild(new self($node));
-                }
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @return iterable<TreeNode>
      */
     public function getChildren(): array
     {
         return $this->children;
-    }
-
-    public function isLeaf(): bool
-    {
-        return empty($this->children);
     }
 
     /**

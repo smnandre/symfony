@@ -21,7 +21,6 @@ class TreeNodeTest extends TestCase
         $node = new TreeNode('Root');
         $this->assertSame('Root', $node->getValue());
         $this->assertEmpty($node->getChildren());
-        $this->assertTrue($node->isLeaf());
     }
 
     public function testAddingChildren()
@@ -32,7 +31,6 @@ class TreeNodeTest extends TestCase
         $root->addChild($child);
 
         $this->assertCount(1, $root->getChildren());
-        $this->assertFalse($root->isLeaf());
         $this->assertSame($child, $root->getChildren()[0]);
     }
 
