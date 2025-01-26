@@ -15,6 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Simon André <smn.andre@gmail.com>
+ *
+ * @implements \RecursiveIterator<int, TreeNode>
  */
 final class Tree implements \RecursiveIterator
 {
