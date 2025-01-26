@@ -128,9 +128,9 @@ TREE, trim($output->fetch()));
     public function testMinimalStyle()
     {
         $output = new BufferedOutput();
-        self::createTree($output, TreeStyle::minimal())->render();
+        $this->createTree($output, TreeStyle::minimal())->render();
 
-        $expected = <<<TREE
+        $this->assertSame(<<<'TREE'
 root
  A
 .  A1
@@ -141,9 +141,7 @@ root
 . . . B12
 . . B2
 . C
-TREE;
-
-        $this->assertSame($expected, trim($output->fetch()));
+TREE, trim($output->fetch()));
     }
 
     public function testRoundedStyle()
@@ -165,21 +163,13 @@ root
 TREE, trim($output->fetch()));
     }
 
-    public function testCreateStyle()
+    public function testCustomPrefix()
     {
         $style = new TreeStyle('A ', 'B ', 'C ', 'D ', 'E ', 'F ');
-
-        $this->assertSame('A ', $style->getPrefixEndHasNext());
-        $this->assertSame('B ', $style->getPrefixEndLast());
-        $this->assertSame('C ', $style->getPrefixLeft());
-        $this->assertSame('D ', $style->getPrefixMidHasNext());
-        $this->assertSame('E ', $style->getPrefixMidLast());
-        $this->assertSame('F ', $style->getPrefixRight());
-
         $output = new BufferedOutput();
         self::createTree($output, $style)->render();
 
-        $expected = <<<TREE
+        $this->assertSame(<<<'TREE'
 root
 C A F A
 C D A F A1
@@ -190,9 +180,7 @@ C D D A F B11
 C D D B F B12
 C D B F B2
 C B F C
-TREE;
-
-        $this->assertSame($expected, trim($output->fetch()));
+TREE, trim($output->fetch()));
     }
 
     private static function createTree(OutputInterface $output, ?TreeStyle $style = null): Tree

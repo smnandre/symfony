@@ -30,18 +30,6 @@ final class Tree implements \RecursiveIterator
         $this->style = $style ?? TreeStyle::default();
     }
 
-    public function getStyle(): TreeStyle
-    {
-        return $this->style;
-    }
-
-    public function setStyle(TreeStyle $style): self
-    {
-        $this->style = $style;
-
-        return $this;
-    }
-
     public function current(): TreeNode
     {
         return $this->node->getChildren()[$this->position];
@@ -88,12 +76,7 @@ final class Tree implements \RecursiveIterator
             \RecursiveIteratorIterator::CATCH_GET_CHILD,
         );
 
-        $treeIterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_LEFT, $this->style->getPrefixLeft());
-        $treeIterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_MID_HAS_NEXT, $this->style->getPrefixMidHasNext());
-        $treeIterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_MID_LAST, $this->style->getPrefixMidLast());
-        $treeIterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_END_HAS_NEXT, $this->style->getPrefixEndHasNext());
-        $treeIterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_END_LAST, $this->style->getPrefixEndLast());
-        $treeIterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_RIGHT, $this->style->getPrefixRight());
+        $this->style->applyPrefixes($treeIterator);
 
         $this->output->writeln($this->node->getValue());
 
