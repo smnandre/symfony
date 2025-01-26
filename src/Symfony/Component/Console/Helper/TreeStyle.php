@@ -130,40 +130,19 @@ final class TreeStyle
 
     private static function style(string $name): self
     {
-        if (!isset(self::STYLES[$name])) {
-            throw new \InvalidArgumentException(\sprintf('Invalid style name "%s". Available styles: "%s".', $name, implode(', ', array_keys(self::STYLES))));
-        }
-
         return new self(...self::STYLES[$name]);
     }
 
-    public function getPrefixEndHasNext(): string
+    /**
+     * @internal
+     */
+    public function applyPrefixes(\RecursiveTreeIterator $iterator): void
     {
-        return $this->prefixEndHasNext;
-    }
-
-    public function getPrefixEndLast(): string
-    {
-        return $this->prefixEndLast;
-    }
-
-    public function getPrefixLeft(): string
-    {
-        return $this->prefixLeft;
-    }
-
-    public function getPrefixMidLast(): string
-    {
-        return $this->prefixMidLast;
-    }
-
-    public function getPrefixMidHasNext(): string
-    {
-        return $this->prefixMidHasNext;
-    }
-
-    public function getPrefixRight(): string
-    {
-        return $this->prefixRight;
+        $iterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_LEFT, $this->prefixLeft);
+        $iterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_MID_HAS_NEXT, $this->prefixMidHasNext);
+        $iterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_MID_LAST, $this->prefixMidLast);
+        $iterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_END_HAS_NEXT, $this->prefixEndHasNext);
+        $iterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_END_LAST, $this->prefixEndLast);
+        $iterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_RIGHT, $this->prefixRight);
     }
 }
