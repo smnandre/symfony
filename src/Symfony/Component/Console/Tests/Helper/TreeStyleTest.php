@@ -27,7 +27,7 @@ class TreeStyleTest extends TestCase
 
         $tree->render();
 
-        $expected = <<<TREE
+        $this->assertSame(<<<TREE
 root
 ├── A
 │   ├── A1
@@ -38,9 +38,7 @@ root
 │   │   └── B12
 │   └── B2
 └── C
-TREE;
-
-        $this->assertSame($expected, trim($output->fetch()));
+TREE, trim($output->fetch()));
     }
 
     public function testFrameStyle()
@@ -50,7 +48,7 @@ TREE;
 
         $tree->render();
 
-        $expected = <<<TREE
+        $this->assertSame(<<<TREE
 root
 ╠═ A
 ╟─ ╠═ A1
@@ -61,9 +59,7 @@ root
 ╟─ ╟─ ╚═ B12
 ╟─ ╚═ B2
 ╚═ C
-TREE;
-
-        $this->assertSame($expected, trim($output->fetch()));
+TREE, trim($output->fetch()));
     }
 
     public function testBoxStyle()
@@ -71,20 +67,18 @@ TREE;
         $output = new BufferedOutput();
         $this->createTree($output, TreeStyle::box())->render();
 
-        $expected = <<<TREE
-        root
-        |-- A
-        |   |-- A1
-        |   `-- A2
-        |-- B
-        |   |-- B1
-        |   |   |-- B11
-        |   |   `-- B12
-        |   `-- B2
-        `-- C
-        TREE;
-
-        $this->assertSame($expected, trim($output->fetch()));
+        $this->assertSame(<<<TREE
+root
+|-- A
+|   |-- A1
+|   `-- A2
+|-- B
+|   |-- B1
+|   |   |-- B11
+|   |   `-- B12
+|   `-- B2
+`-- C
+TREE, trim($output->fetch()));
     }
 
     public function testCompactStyle()
