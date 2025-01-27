@@ -18,73 +18,6 @@ namespace Symfony\Component\Console\Helper;
  */
 final class TreeStyle
 {
-    private const STYLE_DEFAULT = 'default';
-    private const STYLE_BOX = 'box';
-    private const STYLE_COMPACT = 'compact';
-    private const STYLE_FRAME = 'frame';
-    private const STYLE_LIGHT = 'light';
-    private const STYLE_MINIMAL = 'minimal';
-    private const STYLE_ROUNDED = 'rounded';
-
-    private const STYLES = [
-        self::STYLE_DEFAULT => [
-            '├── ',
-            '└── ',
-            '',
-            '│   ',
-            '└── ',
-            '',
-        ],
-        self::STYLE_BOX => [
-            '|-- ',
-            '`-- ',
-            '',
-            '|   ',
-            '`-- ',
-            '',
-        ],
-        self::STYLE_COMPACT => [
-            '|- ',
-            '\- ',
-            '',
-            '| ',
-            '\- ',
-            '',
-        ],
-        self::STYLE_FRAME => [
-            '╠═ ',
-            '╚═ ',
-            '',
-            '╟─ ',
-            '╙─ ',
-            '',
-        ],
-        self::STYLE_LIGHT => [
-            '|-- ',
-            '`-- ',
-            '',
-            '|   ',
-            '`-- ',
-            '',
-        ],
-        self::STYLE_MINIMAL => [
-            ' ',
-            '. ',
-            '',
-            '. ',
-            '. ',
-            '',
-        ],
-        self::STYLE_ROUNDED => [
-            '├─ ',
-            '╰─ ',
-            '',
-            '│  ',
-            '╭─ ',
-            '',
-        ],
-    ];
-
     public function __construct(
         private readonly string $prefixEndHasNext,
         private readonly string $prefixEndLast,
@@ -97,37 +30,85 @@ final class TreeStyle
 
     public static function box(): self
     {
-        return self::style(self::STYLE_BOX);
+        return new self(
+            '┃╸ ',
+            '┗╸ ',
+            '',
+            '┃  ',
+            '┗╸ ',
+            '',
+        );
+    }
+
+    public static function boxDouble(): self
+    {
+        return new self('╠═ ',
+            '╚═ ',
+            '',
+            '║  ',
+            '╚═ ',
+            '',
+        );
     }
 
     public static function compact(): self
     {
-        return self::style(self::STYLE_COMPACT);
+        return new self(
+            '├ ',
+            '└ ',
+            '',
+            '│ ',
+            '└ ',
+            '',
+        );
     }
 
     public static function default(): self
     {
-        return self::style(self::STYLE_DEFAULT);
-    }
-
-    public static function frame(): self
-    {
-        return self::style(self::STYLE_FRAME);
+        return new self(
+            '├── ',
+            '└── ',
+            '',
+            '│   ',
+            '└── ',
+            '',
+        );
     }
 
     public static function light(): self
     {
-        return new self(...self::STYLES[self::STYLE_LIGHT]);
+        return new self(
+            '|-- ',
+            '`-- ',
+            '',
+            '|   ',
+            '`-- ',
+            '',
+        );
     }
 
     public static function minimal(): self
     {
-        return self::style(self::STYLE_MINIMAL);
+        return new self(
+            '',
+            '. ',
+            '',
+            '. ',
+            '. ',
+            '',
+        );
     }
 
     public static function rounded(): self
     {
-        return self::style(self::STYLE_ROUNDED);
+        return new self(
+            '├─ ',
+            '╰─ ',
+            '',
+            '│  ',
+            '╭─ ',
+            '',
+        );
     }
 
     private static function style(string $name): self

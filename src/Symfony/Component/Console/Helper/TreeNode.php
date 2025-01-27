@@ -16,7 +16,7 @@ namespace Symfony\Component\Console\Helper;
  *
  * @author Simon André <smn.andre@gmail.com>
  */
-final class TreeNode implements \Countable, \IteratorAggregate, \Stringable
+final class TreeNode implements \Countable, \IteratorAggregate
 {
     private readonly string $value;
 
