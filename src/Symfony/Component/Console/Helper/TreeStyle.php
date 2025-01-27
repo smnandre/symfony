@@ -12,6 +12,8 @@
 namespace Symfony\Component\Console\Helper;
 
 /**
+ * Configures the output of the Tree helper.
+ *
  * @author Simon André <smn.andre@gmail.com>
  */
 final class TreeStyle
