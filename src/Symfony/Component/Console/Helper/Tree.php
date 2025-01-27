@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class Tree implements \RecursiveIterator
 {
-    private TreeStyle $style;
+    private readonly TreeStyle $style;
 
     private int $position = 0;
 
@@ -32,36 +32,57 @@ final class Tree implements \RecursiveIterator
         $this->style = $style ?? TreeStyle::default();
     }
 
+    /**
+     * @internal
+     */
     public function current(): TreeNode
     {
         return $this->node->getChildren()[$this->position];
     }
 
+    /**
+     * @internal
+     */
     public function key(): int
     {
         return $this->position;
     }
 
+    /**
+     * @internal
+     */
     public function next(): void
     {
         ++$this->position;
     }
 
+    /**
+     * @internal
+     */
     public function rewind(): void
     {
         $this->position = 0;
     }
 
+    /**
+     * @internal
+     */
     public function valid(): bool
     {
         return isset($this->node->getChildren()[$this->position]);
     }
 
+    /**
+     * @internal
+     */
     public function hasChildren(): bool
     {
         return [] !== $this->current()->getChildren();
     }
 
+    /**
+     * @internal
+     */
     public function getChildren(): \RecursiveIterator
     {
         return new self($this->output, $this->current(), $this->style);
