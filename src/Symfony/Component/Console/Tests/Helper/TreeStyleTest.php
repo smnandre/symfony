@@ -41,27 +41,6 @@ root
 TREE, trim($output->fetch()));
     }
 
-    public function testFrameStyle()
-    {
-        $output = new BufferedOutput();
-        $tree = self::createTree($output, TreeStyle::frame());
-
-        $tree->render();
-
-        $this->assertSame(<<<TREE
-root
-╠═ A
-╟─ ╠═ A1
-╟─ ╚═ A2
-╠═ B
-╟─ ╠═ B1
-╟─ ╟─ ╠═ B11
-╟─ ╟─ ╚═ B12
-╟─ ╚═ B2
-╚═ C
-TREE, trim($output->fetch()));
-    }
-
     public function testBoxStyle()
     {
         $output = new BufferedOutput();
@@ -69,15 +48,34 @@ TREE, trim($output->fetch()));
 
         $this->assertSame(<<<TREE
 root
-|-- A
-|   |-- A1
-|   `-- A2
-|-- B
-|   |-- B1
-|   |   |-- B11
-|   |   `-- B12
-|   `-- B2
-`-- C
+┃╸ A
+┃  ┃╸ A1
+┃  ┗╸ A2
+┃╸ B
+┃  ┃╸ B1
+┃  ┃  ┃╸ B11
+┃  ┃  ┗╸ B12
+┃  ┗╸ B2
+┗╸ C
+TREE, trim($output->fetch()));
+    }
+
+    public function testBoxDoubleStyle()
+    {
+        $output = new BufferedOutput();
+        $this->createTree($output, TreeStyle::boxDouble())->render();
+
+        $this->assertSame(<<<TREE
+root
+╠═ A
+║  ╠═ A1
+║  ╚═ A2
+╠═ B
+║  ╠═ B1
+║  ║  ╠═ B11
+║  ║  ╚═ B12
+║  ╚═ B2
+╚═ C
 TREE, trim($output->fetch()));
     }
 
@@ -88,15 +86,15 @@ TREE, trim($output->fetch()));
 
         $this->assertSame(<<<'TREE'
 root
-|- A
-| |- A1
-| \- A2
-|- B
-| |- B1
-| | |- B11
-| | \- B12
-| \- B2
-\- C
+├ A
+│ ├ A1
+│ └ A2
+├ B
+│ ├ B1
+│ │ ├ B11
+│ │ └ B12
+│ └ B2
+└ C
 TREE, trim($output->fetch()));
     }
 
@@ -126,12 +124,12 @@ TREE, trim($output->fetch()));
 
         $this->assertSame(<<<'TREE'
 root
- A
-.  A1
+A
+. A1
 . . A2
- B
-.  B1
-. .  B11
+B
+. B1
+. . B11
 . . . B12
 . . B2
 . C
