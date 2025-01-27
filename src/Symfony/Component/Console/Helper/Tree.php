@@ -88,11 +88,11 @@ final class Tree implements \RecursiveIterator
         return new self($this->output, $this->current(), $this->style);
     }
 
+    /**
+     * Recursively renders the tree to the output, applying the tree style.
+     */
     public function render(): void
     {
-        $visited = [];
-        $this->detectCycle($this->node, $visited);
-
         $treeIterator = new \RecursiveTreeIterator(
             $this,
             \RecursiveIteratorIterator::CHILD_FIRST,
@@ -103,24 +103,27 @@ final class Tree implements \RecursiveIterator
 
         $this->output->writeln($this->node->getValue());
 
-        foreach ($treeIterator as $line) {
+        $visited = new \SplObjectStorage();
+        foreach ($this->traverseWithCycleDetection($treeIterator, $visited) as $line) {
             $this->output->writeln($line);
         }
     }
 
-    private function detectCycle(TreeNode $node, array &$visited): void
+    /**
+     * Traverses the tree with cycle detection.
+     *
+     * @return \Generator<string>
+     */
+    private function traverseWithCycleDetection(\RecursiveTreeIterator $iterator, \SplObjectStorage $visited): \Generator
     {
-        $nodeId = spl_object_id($node);
-        if (isset($visited[$nodeId])) {
-            throw new \LogicException('Cycle detected in the tree structure.');
+        foreach ($iterator as $node) {
+            $currentNode = $node instanceof TreeNode ? $node : $iterator->getInnerIterator()->current();
+            if ($visited->contains($currentNode)) {
+                throw new \LogicException(\sprintf('Cycle detected at node: "%s".', $currentNode->getValue()));
+            }
+            $visited->attach($currentNode);
+
+            yield $node;
         }
-
-        $visited[$nodeId] = true;
-
-        foreach ($node->getChildren() as $child) {
-            $this->detectCycle($child, $visited);
-        }
-
-        unset($visited[$nodeId]);
     }
 }
