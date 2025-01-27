@@ -43,13 +43,11 @@ class TreeTest extends TestCase
 
         $tree->render();
 
-        $expectedOutput = <<<TREE
-        Root
-        ├── Child 1
-        └── Child 2
-        TREE;
-
-        $this->assertSame($expectedOutput."\n", $output->fetch());
+        $this->assertSame(<<<TREE
+Root
+├── Child 1
+└── Child 2
+TREE, trim($output->fetch()));
     }
 
     public function testRenderThreeLevelTree()
@@ -68,14 +66,12 @@ class TreeTest extends TestCase
 
         $tree->render();
 
-        $expectedOutput = <<<TREE
+        $this->assertSame(<<<TREE
 Root
 ├── Child 1
 │   └── SubChild 1
 └── Child 2
-TREE;
-
-        $this->assertSame($expectedOutput."\n", $output->fetch());
+TREE, trim($output->fetch()));
     }
 
     public function testRenderMultiLevelTree()
@@ -98,16 +94,14 @@ TREE;
 
         $tree->render();
 
-        $expectedOutput = <<<TREE
+        $this->assertSame(<<<TREE
 Root
 ├── Child 1
 │   ├── SubChild 1
 │   │   └── SubSubChild 1
 │   └── SubChild 2
 └── Child 2
-TREE;
-
-        $this->assertSame($expectedOutput."\n", $output->fetch());
+TREE, trim($output->fetch()));
     }
 
     public function testRenderSingleNodeTree()
@@ -118,11 +112,9 @@ TREE;
 
         $tree->render();
 
-        $expectedOutput = <<<TREE
+        $this->assertSame(<<<TREE
 Root
-TREE;
-
-        $this->assertSame($expectedOutput."\n", $output->fetch());
+TREE, trim($output->fetch()));
     }
 
     public function testRenderEmptyTree()
@@ -133,11 +125,9 @@ TREE;
 
         $tree->render();
 
-        $expectedOutput = <<<TREE
+        $this->assertSame(<<<TREE
 Root
-TREE;
-
-        $this->assertSame($expectedOutput."\n", $output->fetch());
+TREE, trim($output->fetch()));
     }
 
     public function testRenderDeeplyNestedTree()
@@ -163,7 +153,7 @@ TREE;
         $tree = new Tree($output, $rootNode, $style);
         $tree->render();
 
-        $expectedOutput = <<<TREE
+        $this->assertSame(<<<TREE
 Root
 └── Level 1
   └── Level 2
@@ -175,9 +165,7 @@ Root
               └── Level 8
                 └── Level 9
                   └── Level 10
-TREE;
-
-        $this->assertSame($expectedOutput."\n", $output->fetch());
+TREE, trim($output->fetch()));
     }
 
     public function testRenderNodeWithMultipleChildren()
@@ -196,14 +184,12 @@ TREE;
 
         $tree->render();
 
-        $expectedOutput = <<<TREE
+        $this->assertSame(<<<TREE
 Root
 ├── Child 1
 ├── Child 2
 └── Child 3
-TREE;
-
-        $this->assertSame($expectedOutput."\n", $output->fetch());
+TREE, trim($output->fetch()));
     }
 
     public function testRenderTreeWithDuplicateNodeNames()
@@ -222,14 +208,12 @@ TREE;
 
         $tree->render();
 
-        $expectedOutput = <<<TREE
+        $this->assertSame(<<<TREE
 Root
 ├── Child
 │   └── Child
 └── Child
-TREE;
-
-        $this->assertSame($expectedOutput."\n", $output->fetch());
+TREE, trim($output->fetch()));
     }
 
     public function testRenderTreeWithComplexNodeNames()
@@ -248,14 +232,12 @@ TREE;
 
         $tree->render();
 
-        $expectedOutput = <<<TREE
+        $this->assertSame(<<<TREE
 Root
 ├── Child 1 (special)
 │   └── Node with spaces
 └── Child_2@#$
-TREE;
-
-        $this->assertSame($expectedOutput."\n", $output->fetch());
+TREE, trim($output->fetch()));
     }
 
     public function testRenderTreeWithCycle()
