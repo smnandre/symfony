@@ -111,11 +111,6 @@ final class TreeStyle
         );
     }
 
-    private static function style(string $name): self
-    {
-        return new self(...self::STYLES[$name]);
-    }
-
     /**
      * @internal
      */
