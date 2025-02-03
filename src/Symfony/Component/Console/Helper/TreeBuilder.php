@@ -11,6 +11,8 @@
 
 namespace Symfony\Component\Console\Helper;
 
+use Symfony\Component\Finder\Finder;
+
 /**
  * @author Simon André <smn.andre@gmail.com>
  */
@@ -54,6 +56,32 @@ final class TreeBuilder
                 }
             }
         }
+
+        return $root;
+    }
+
+    public static function buildFromFinder(Finder $finder): TreeNode
+    {
+        $root = new TreeNode('Root');
+        $root->addChild(function () use ($finder) {
+            foreach ($finder as $item) {
+                if ($item->isDir()) {
+                    $dirNode = new TreeNode($item->getFilename());
+                    $dirNode->addChild(function () use ($item) {
+                        $subFinder = new Finder();
+                        $subFinder->in($item->getRealPath())->depth('== 0')->sortByName();
+                        yield from self::buildFromFinder($subFinder);
+                    });
+                    yield $dirNode;
+                } else {
+                    $filename = $item->getFilename();
+                    if (stripos($filename, 'er.php') !== false) {
+                        $filename = "<fg=red>$filename</>";
+                    }
+                    yield new TreeNode($filename);
+                }
+            }
+        });
 
         return $root;
     }

@@ -18,26 +18,23 @@ namespace Symfony\Component\Console\Helper;
  */
 final class TreeNode implements \Countable, \IteratorAggregate
 {
-    private readonly string $value;
-
     /**
-     * @var array<self>
+     * @var array<TreeNode|callable(): \Generator>
      */
-    private array $children;
+    private array $children = [];
 
     public function __construct(
-        ?string $value = null,
+        private readonly string $value = '',
         ?self $parent = null,
-        array $children = [],
+        iterable $children = [],
     ) {
-        $this->value = $value ?? '';
         if ($parent) {
             $parent->addChild($this);
         }
+
         foreach ($children as $child) {
             $this->addChild($child);
         }
-        $this->children = $children;
     }
 
     public function getValue(): string
@@ -45,46 +42,51 @@ final class TreeNode implements \Countable, \IteratorAggregate
         return $this->value;
     }
 
-    public function addChild(self|string $node): self
+    public function addChild(self|string|callable $node): self
     {
         if (\is_string($node)) {
             $node = new self($node, $this);
         }
 
-        $this->children[] = $node;
+        if (\is_callable($node)) {
+            $this->children[] = $node;
+        } else {
+            $this->children[] = $node;
+        }
 
         return $this;
     }
 
     /**
-     * @return iterable<TreeNode>
+     * @return \Traversable<TreeNode>
      */
     public function getChildren(): iterable
     {
-        return $this->children;
+        foreach ($this->children as $child) {
+            if (\is_callable($child)) {
+                yield from $child();
+            } elseif ($child instanceof self) {
+                yield $child;
+            }
+        }
     }
 
     /**
-     * @return \RecursiveArrayIterator<TreeNode>
+     * @return \Traversable<TreeNode>
      */
-    public function getIterator(): \RecursiveArrayIterator
+    public function getIterator(): \Traversable
     {
-        return new class($this->children) extends \RecursiveArrayIterator {
-            public function hasChildren(): bool
-            {
-                return !$this->current()->hasChildren();
-            }
-
-            public function getChildren(): self
-            {
-                return new self($this->current()->getChildren());
-            }
-        };
+        return $this->getChildren();
     }
 
     public function count(): int
     {
-        return \count($this->children);
+        $count = 0;
+        foreach ($this->getChildren() as $child) {
+            ++$count;
+        }
+
+        return $count;
     }
 
     public function __toString(): string

@@ -20,7 +20,7 @@ class TreeNodeTest extends TestCase
     {
         $node = new TreeNode('Root');
         $this->assertSame('Root', $node->getValue());
-        $this->assertEmpty($node->getChildren());
+        $this->assertSame(0, iterator_count($node->getChildren()));
     }
 
     public function testAddingChildren()
@@ -30,8 +30,25 @@ class TreeNodeTest extends TestCase
 
         $root->addChild($child);
 
-        $this->assertCount(1, $root->getChildren());
-        $this->assertSame($child, $root->getChildren()[0]);
+        $this->assertSame(1, iterator_count($root->getChildren()));
+        $this->assertSame($child, iterator_to_array($root->getChildren())[0]);
+    }
+
+    public function testAddingChildrenWithGenerators()
+    {
+        $root = new TreeNode('Root');
+
+        $root->addChild(function () {
+            yield new TreeNode('Generated Child 1');
+            yield new TreeNode('Generated Child 2');
+        });
+
+        $this->assertSame(2, iterator_count($root->getChildren()));
+
+        $children = iterator_to_array($root->getChildren());
+
+        $this->assertSame('Generated Child 1', $children[0]->getValue());
+        $this->assertSame('Generated Child 2', $children[1]->getValue());
     }
 
     public function testRecursiveStructure()
@@ -45,7 +62,7 @@ class TreeNodeTest extends TestCase
         $root->addChild($child1);
         $root->addChild($child2);
 
-        $this->assertCount(2, $root->getChildren());
-        $this->assertSame($leaf1, $child1->getChildren()[0]);
+        $this->assertSame(2, iterator_count($root->getChildren()));
+        $this->assertSame($leaf1, iterator_to_array($child1->getChildren())[0]);
     }
 }

@@ -22,7 +22,7 @@ final class Tree implements \RecursiveIterator
 {
     private readonly TreeStyle $style;
 
-    private int $position = 0;
+    private \Iterator $childrenIterator;
 
     public function __construct(
         private readonly OutputInterface $output,
@@ -30,36 +30,46 @@ final class Tree implements \RecursiveIterator
         ?TreeStyle $style = null,
     ) {
         $this->style = $style ?? TreeStyle::default();
+        $this->childrenIterator = new \IteratorIterator($node->getChildren());
+        $this->childrenIterator->rewind();
     }
 
     public function current(): TreeNode
     {
-        return $this->node->getChildren()[$this->position];
+        return $this->childrenIterator->current();
     }
 
     public function key(): int
     {
-        return $this->position;
+        return $this->childrenIterator->key();
     }
 
     public function next(): void
     {
-        ++$this->position;
+        $this->childrenIterator->next();
     }
 
     public function rewind(): void
     {
-        $this->position = 0;
+        $this->childrenIterator->rewind();
     }
 
     public function valid(): bool
     {
-        return isset($this->node->getChildren()[$this->position]);
+        return $this->childrenIterator->valid();
     }
 
     public function hasChildren(): bool
     {
-        return [] !== $this->current()->getChildren();
+        if (null === $current = $this->current()) {
+            return false;
+        }
+
+        foreach ($current->getChildren() as $child) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getChildren(): \RecursiveIterator
