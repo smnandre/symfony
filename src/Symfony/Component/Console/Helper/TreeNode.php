@@ -60,7 +60,7 @@ final class TreeNode implements \Countable, \IteratorAggregate
     /**
      * @return \Traversable<TreeNode>
      */
-    public function getChildren(): iterable
+    public function getChildren(): \Traversable
     {
         foreach ($this->children as $child) {
             if (\is_callable($child)) {
