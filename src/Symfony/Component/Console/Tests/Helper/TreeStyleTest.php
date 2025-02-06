@@ -32,6 +32,9 @@ root
 ├── A
 │   ├── A1
 │   └── A2
+│      └── A2.1
+│         ├── A2.1.1
+│         └── A2.1.2
 ├── B
 │   ├── B1
 │   │   ├── B11
@@ -51,6 +54,9 @@ root
 ┃╸ A
 ┃  ┃╸ A1
 ┃  ┗╸ A2
+┃     ┗╸ A2.1
+┃        ┃╸ A2.1.1
+┃        ┗╸ A2.1.2
 ┃╸ B
 ┃  ┃╸ B1
 ┃  ┃  ┃╸ B11
@@ -70,6 +76,9 @@ root
 ╠═ A
 ║  ╠═ A1
 ║  ╚═ A2
+║    ╚═ A2.1
+║      ╠═ A2.1.1
+║      ╚═ A2.1.2
 ╠═ B
 ║  ╠═ B1
 ║  ║  ╠═ B11
@@ -89,6 +98,9 @@ root
 ├ A
 │ ├ A1
 │ └ A2
+│   └ A2.1
+│     ├ A2.1.1
+│     └ A2.1.2
 ├ B
 │ ├ B1
 │ │ ├ B11
@@ -108,6 +120,9 @@ root
 |-- A
 |   |-- A1
 |   `-- A2
+|       `-- A2.1
+|           |-- A2.1.1
+|           `-- A2.1.2
 |-- B
 |   |-- B1
 |   |   |-- B11
@@ -124,12 +139,15 @@ TREE, trim($output->fetch()));
 
         $this->assertSame(<<<'TREE'
 root
-A
-. A1
+. A
+. . A1
 . . A2
-B
-. B1
-. . B11
+.   . A2.1
+.     . A2.1.1
+.     . A2.1.2
+. B
+. . B1
+. . . B11
 . . . B12
 . . B2
 . C
@@ -146,6 +164,9 @@ root
 ├─ A
 │  ├─ A1
 │  ╰─ A2
+│     ╰─ A2.1
+│        ├─ A2.1.1
+│        ╰─ A2.1.2
 ├─ B
 │  ├─ B1
 │  │  ├─ B11
@@ -166,6 +187,9 @@ root
 C A F A
 C D A F A1
 C D B F A2
+C D E B F A2.1
+C D E E A F A2.1.1
+C D E E B F A2.1.2
 C A F B
 C D A F B1
 C D D A F B11
@@ -181,7 +205,12 @@ TREE, trim($output->fetch()));
         $root
             ->addChild((new TreeNode('A'))
                 ->addChild(new TreeNode('A1'))
-                ->addChild(new TreeNode('A2'))
+                ->addChild((new TreeNode('A2'))
+                    ->addChild((new TreeNode('A2.1'))
+                        ->addChild(new TreeNode('A2.1.1'))
+                        ->addChild(new TreeNode('A2.1.2'))
+                    )
+                )
             )
             ->addChild((new TreeNode('B'))
                 ->addChild((new TreeNode('B1'))

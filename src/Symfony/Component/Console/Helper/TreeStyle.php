@@ -35,7 +35,7 @@ final class TreeStyle
             '┗╸ ',
             '',
             '┃  ',
-            '┗╸ ',
+            '   ',
             '',
         );
     }
@@ -46,7 +46,7 @@ final class TreeStyle
             '╚═ ',
             '',
             '║  ',
-            '╚═ ',
+            '  ',
             '',
         );
     }
@@ -58,7 +58,7 @@ final class TreeStyle
             '└ ',
             '',
             '│ ',
-            '└ ',
+            '  ',
             '',
         );
     }
@@ -70,7 +70,7 @@ final class TreeStyle
             '└── ',
             '',
             '│   ',
-            '└── ',
+            '   ',
             '',
         );
     }
@@ -82,7 +82,7 @@ final class TreeStyle
             '`-- ',
             '',
             '|   ',
-            '`-- ',
+            '    ',
             '',
         );
     }
@@ -90,11 +90,11 @@ final class TreeStyle
     public static function minimal(): self
     {
         return new self(
+            '. ',
+            '. ',
             '',
             '. ',
-            '',
-            '. ',
-            '. ',
+            '  ',
             '',
         );
     }
@@ -106,7 +106,7 @@ final class TreeStyle
             '╰─ ',
             '',
             '│  ',
-            '╭─ ',
+            '   ',
             '',
         );
     }

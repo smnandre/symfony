@@ -82,11 +82,7 @@ final class Tree implements \RecursiveIterator
      */
     public function render(): void
     {
-        $treeIterator = new \RecursiveTreeIterator(
-            $this,
-            \RecursiveIteratorIterator::CHILD_FIRST,
-            \RecursiveIteratorIterator::CATCH_GET_CHILD,
-        );
+        $treeIterator = new \RecursiveTreeIterator($this);
 
         $this->style->applyPrefixes($treeIterator);
 

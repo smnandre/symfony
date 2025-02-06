@@ -48,11 +48,7 @@ final class TreeNode implements \Countable, \IteratorAggregate
             $node = new self($node, $this);
         }
 
-        if (\is_callable($node)) {
-            $this->children[] = $node;
-        } else {
-            $this->children[] = $node;
-        }
+        $this->children[] = $node;
 
         return $this;
     }
