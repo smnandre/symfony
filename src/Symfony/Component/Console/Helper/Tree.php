@@ -14,6 +14,8 @@ namespace Symfony\Component\Console\Helper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
+ * Allows to render a tree structure to the console output.
+ *
  * @author Simon André <smn.andre@gmail.com>
  *
  * @implements \RecursiveIterator<int, TreeNode>
@@ -34,31 +36,49 @@ final class Tree implements \RecursiveIterator
         $this->childrenIterator->rewind();
     }
 
+    /**
+     * @internal
+     */
     public function current(): TreeNode
     {
         return $this->childrenIterator->current();
     }
 
+    /**
+     * @internal
+     */
     public function key(): int
     {
         return $this->childrenIterator->key();
     }
 
+    /**
+     * @internal
+     */
     public function next(): void
     {
         $this->childrenIterator->next();
     }
 
+    /**
+     * @internal
+     */
     public function rewind(): void
     {
         $this->childrenIterator->rewind();
     }
 
+    /**
+     * @internal
+     */
     public function valid(): bool
     {
         return $this->childrenIterator->valid();
     }
 
+    /**
+     * @internal
+     */
     public function hasChildren(): bool
     {
         if (null === $current = $this->current()) {
@@ -72,6 +92,9 @@ final class Tree implements \RecursiveIterator
         return false;
     }
 
+    /**
+     * @internal
+     */
     public function getChildren(): \RecursiveIterator
     {
         return new self($this->output, $this->current(), $this->style);
