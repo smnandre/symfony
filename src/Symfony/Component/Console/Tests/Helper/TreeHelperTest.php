@@ -12,20 +12,27 @@
 namespace Symfony\Component\Console\Tests\Helper;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Helper\Tree;
+use Symfony\Component\Console\Helper\TreeHelper;
 use Symfony\Component\Console\Helper\TreeNode;
 use Symfony\Component\Console\Helper\TreeStyle;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-class TreeTest extends TestCase
+class TreeHelperTest extends TestCase
 {
+    public function testRenderWithoutNode()
+    {
+        $tree = new TreeHelper($output = new BufferedOutput());
+
+        $tree->render();
+        $this->assertSame("\n", $output->fetch());
+    }
+
     public function testRenderSingleNode()
     {
         $rootNode = new TreeNode('Root');
-        $tree = new Tree($output = new BufferedOutput(), $rootNode);
+        $tree = new TreeHelper($output = new BufferedOutput(), $rootNode);
 
         $tree->render();
-
         $this->assertSame("Root\n", $output->fetch());
     }
 
@@ -39,10 +46,9 @@ class TreeTest extends TestCase
         $rootNode->addChild($child2);
 
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $tree->render();
-
         $this->assertSame(<<<TREE
 Root
 ├── Child 1
@@ -62,10 +68,9 @@ TREE, trim($output->fetch()));
         $rootNode->addChild($child2);
 
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $tree->render();
-
         $this->assertSame(<<<TREE
 Root
 ├── Child 1
@@ -90,10 +95,9 @@ TREE, trim($output->fetch()));
         $rootNode->addChild($child2);
 
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $tree->render();
-
         $this->assertSame(<<<TREE
 Root
 ├── Child 1
@@ -108,10 +112,9 @@ TREE, trim($output->fetch()));
     {
         $rootNode = new TreeNode('Root');
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $tree->render();
-
         $this->assertSame(<<<TREE
 Root
 TREE, trim($output->fetch()));
@@ -121,10 +124,9 @@ TREE, trim($output->fetch()));
     {
         $rootNode = new TreeNode('Root');
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $tree->render();
-
         $this->assertSame(<<<TREE
 Root
 TREE, trim($output->fetch()));
@@ -150,9 +152,9 @@ TREE, trim($output->fetch()));
         ]);
 
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode, $style);
-        $tree->render();
+        $tree = new TreeHelper($output, $rootNode, $style);
 
+        $tree->render();
         $this->assertSame(<<<TREE
 Root
 └── Level 1
@@ -180,10 +182,9 @@ TREE, trim($output->fetch()));
         $rootNode->addChild($child3);
 
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $tree->render();
-
         $this->assertSame(<<<TREE
 Root
 ├── Child 1
@@ -204,10 +205,9 @@ TREE, trim($output->fetch()));
         $rootNode->addChild($child2);
 
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $tree->render();
-
         $this->assertSame(<<<TREE
 Root
 ├── Child
@@ -228,10 +228,9 @@ TREE, trim($output->fetch()));
         $rootNode->addChild($child2);
 
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $tree->render();
-
         $this->assertSame(<<<TREE
 Root
 ├── Child 1 (special)
@@ -253,7 +252,7 @@ TREE, trim($output->fetch()));
         $rootNode->addChild($child1);
 
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $this->expectException(\LogicException::class);
         $tree->render();
@@ -267,7 +266,7 @@ TREE, trim($output->fetch()));
         }
 
         $output = new BufferedOutput();
-        $tree = new Tree($output, $rootNode);
+        $tree = new TreeHelper($output, $rootNode);
 
         $tree->render();
 
@@ -277,14 +276,14 @@ TREE, trim($output->fetch()));
         $this->assertSame('└── Child 100', end($lines));
     }
 
-    public function testFromArrayWithRoot()
+    public function testCreateWithRoot()
     {
         $output = new BufferedOutput();
         $array = ['child1', 'child2'];
 
-        $tree = Tree::fromArray($output, $array, 'root');
-        $tree->render();
+        $tree = TreeHelper::create($output, $array, 'root');
 
+        $tree->render();
         $this->assertSame(<<<TREE
 root
 ├── child1
@@ -292,14 +291,14 @@ root
 TREE, trim($output->fetch()));
     }
 
-    public function testFromArrayWithNestedArray()
+    public function testCreateWithNestedArray()
     {
         $output = new BufferedOutput();
         $array = ['child1', 'child2' => ['child2.1', 'child2.2' => ['child2.2.1']], 'child3'];
 
-        $tree = Tree::fromArray($output, $array, 'root');
-        $tree->render();
+        $tree = TreeHelper::create($output, $array, 'root');
 
+        $tree->render();
         $this->assertSame(<<<TREE
 root
 ├── child1
@@ -311,28 +310,28 @@ root
 TREE, trim($output->fetch()));
     }
 
-    public function testFromArrayWithoutRoot()
+    public function testCreateWithoutRoot()
     {
         $output = new BufferedOutput();
         $array = ['child1', 'child2'];
 
-        $tree = Tree::fromArray($output, $array);
-        $tree->render();
+        $tree = TreeHelper::create($output, $array);
 
+        $tree->render();
         $this->assertSame(<<<TREE
 ├── child1
 └── child2
 TREE, trim($output->fetch()));
     }
 
-    public function testFromArrayWithEmptyArray()
+    public function testCreateWithEmptyArray()
     {
         $output = new BufferedOutput();
         $array = [];
 
-        $tree = Tree::fromArray($output, $array);
-        $tree->render();
+        $tree = TreeHelper::create($output, $array);
 
+        $tree->render();
         $this->assertSame('', trim($output->fetch()));
     }
 }

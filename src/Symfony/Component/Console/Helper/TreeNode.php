@@ -37,6 +37,24 @@ final class TreeNode implements \Countable, \IteratorAggregate
         }
     }
 
+    public static function fromValues(iterable $nodes, ?self $node = null): self
+    {
+        $node ??= new self();
+        foreach ($nodes as $key => $value) {
+            if (is_iterable($value)) {
+                $child = new self($key);
+                self::fromValues($value, $child);
+                $node->addChild($child);
+            } elseif ($value instanceof self) {
+                $node->addChild($value);
+            } else {
+                $node->addChild(new self($value));
+            }
+        }
+
+        return $node;
+    }
+
     /**
      * @param array<string> $array
      */
@@ -46,6 +64,29 @@ final class TreeNode implements \Countable, \IteratorAggregate
         foreach ($array as $key => $value) {
             if (\is_array($value)) {
                 $node->addChild(self::fromArray($value, new self($key)));
+            } else {
+                $node->addChild(new self($value));
+            }
+        }
+
+        return $node;
+    }
+
+    /**
+     * Creates a tree from an iterable.
+     *
+     * @param iterable<string, iterable|string|TreeNode> $iterable
+     */
+    public static function fromIterable(iterable $iterable, ?self $node = null): self
+    {
+        $node ??= new self();
+        foreach ($iterable as $key => $value) {
+            if (\is_array($value)) {
+                $child = new self($key);
+                self::fromIterable($value, $child);
+                $node->addChild($child);
+            } elseif ($value instanceof self) {
+                $node->addChild($value);
             } else {
                 $node->addChild(new self($value));
             }

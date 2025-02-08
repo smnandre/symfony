@@ -21,7 +21,7 @@ use Symfony\Component\Console\Helper\SymfonyQuestionHelper;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
-use Symfony\Component\Console\Helper\Tree;
+use Symfony\Component\Console\Helper\TreeHelper;
 use Symfony\Component\Console\Helper\TreeNode;
 use Symfony\Component\Console\Helper\TreeStyle;
 use Symfony\Component\Console\Input\InputInterface;
@@ -384,18 +384,11 @@ class SymfonyStyle extends OutputStyle
     /**
      * @param iterable<string, iterable|string|TreeNode> $nodes
      */
-    public function createTree(iterable $nodes, string $root = ''): Tree
+    public function createTree(iterable $nodes, string $root = ''): TreeHelper
     {
         $output = $this->output instanceof ConsoleOutputInterface ? $this->output->section() : $this->output;
 
-        $treeNode = new TreeNode($root ?? '');
-        if (is_array($nodes)) {
-            $treeNode->addChild(fn() => yield from $nodes);
-        } else {
-            $treeNode->addChild(fn() => yield from iterator_to_array($nodes));
-        }
-
-        return new Tree($output, $treeNode, TreeStyle::default());
+        return TreeHelper::create($output, $nodes, $root, TreeStyle::default());
     }
 
     private function autoPrependBlock(): void

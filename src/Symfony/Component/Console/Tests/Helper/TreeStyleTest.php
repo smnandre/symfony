@@ -12,7 +12,7 @@
 namespace Symfony\Component\Console\Tests\Helper;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Helper\Tree;
+use Symfony\Component\Console\Helper\TreeHelper;
 use Symfony\Component\Console\Helper\TreeNode;
 use Symfony\Component\Console\Helper\TreeStyle;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -199,7 +199,7 @@ C B F C
 TREE, trim($output->fetch()));
     }
 
-    private static function createTree(OutputInterface $output, ?TreeStyle $style = null): Tree
+    private static function createTree(OutputInterface $output, ?TreeStyle $style = null): TreeHelper
     {
         $root = new TreeNode('root');
         $root
@@ -221,6 +221,6 @@ TREE, trim($output->fetch()));
             )
             ->addChild(new TreeNode('C'));
 
-        return new Tree($output, $root, $style);
+        return new TreeHelper($output, $root, $style);
     }
 }

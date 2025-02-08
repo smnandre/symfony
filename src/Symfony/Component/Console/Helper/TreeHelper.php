@@ -14,31 +14,34 @@ namespace Symfony\Component\Console\Helper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Allows to render a tree structure to the console output.
+ * The TreeHelper class provides methods to display tree-like structures.
  *
  * @author Simon André <smn.andre@gmail.com>
  *
  * @implements \RecursiveIterator<int, TreeNode>
  */
-final class Tree implements \RecursiveIterator
+final class TreeHelper implements \RecursiveIterator
 {
     private readonly TreeStyle $style;
+
+    private readonly TreeNode $node;
 
     private \Iterator $childrenIterator;
 
     public function __construct(
         private readonly OutputInterface $output,
-        private readonly TreeNode $node,
+        ?TreeNode $node = null,
         ?TreeStyle $style = null,
     ) {
+        $this->node = $node ?? new TreeNode();
         $this->style = $style ?? TreeStyle::default();
-        $this->childrenIterator = new \IteratorIterator($node->getChildren());
+        $this->childrenIterator = new \IteratorIterator($this->node->getChildren());
         $this->childrenIterator->rewind();
     }
 
-    public static function fromArray(OutputInterface $output, array $array, ?string $root = null): self
+    public static function create(OutputInterface $output, iterable $values, ?string $root = null, ?TreeStyle $style = null): self
     {
-        return new self($output, TreeNode::fromArray($array, new TreeNode($root ?? '')));
+        return new self($output, TreeNode::fromValues($values, new TreeNode($root ?? '')), $style);
     }
 
     /**
