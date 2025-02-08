@@ -36,6 +36,11 @@ final class Tree implements \RecursiveIterator
         $this->childrenIterator->rewind();
     }
 
+    public static function fromArray(OutputInterface $output, array $array, ?string $root = null): self
+    {
+        return new self($output, TreeNode::fromArray($array, new TreeNode($root ?? '')));
+    }
+
     /**
      * @internal
      */

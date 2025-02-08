@@ -276,4 +276,63 @@ TREE, trim($output->fetch()));
         $this->assertSame('Root', $lines[0]);
         $this->assertSame('└── Child 100', end($lines));
     }
+
+    public function testFromArrayWithRoot()
+    {
+        $output = new BufferedOutput();
+        $array = ['child1', 'child2'];
+
+        $tree = Tree::fromArray($output, $array, 'root');
+        $tree->render();
+
+        $this->assertSame(<<<TREE
+root
+├── child1
+└── child2
+TREE, trim($output->fetch()));
+    }
+
+    public function testFromArrayWithNestedArray()
+    {
+        $output = new BufferedOutput();
+        $array = ['child1', 'child2' => ['child2.1', 'child2.2' => ['child2.2.1']], 'child3'];
+
+        $tree = Tree::fromArray($output, $array, 'root');
+        $tree->render();
+
+        $this->assertSame(<<<TREE
+root
+├── child1
+├── child2
+│   ├── child2.1
+│   └── child2.2
+│      └── child2.2.1
+└── child3
+TREE, trim($output->fetch()));
+    }
+
+    public function testFromArrayWithoutRoot()
+    {
+        $output = new BufferedOutput();
+        $array = ['child1', 'child2'];
+
+        $tree = Tree::fromArray($output, $array);
+        $tree->render();
+
+        $this->assertSame(<<<TREE
+├── child1
+└── child2
+TREE, trim($output->fetch()));
+    }
+
+    public function testFromArrayWithEmptyArray()
+    {
+        $output = new BufferedOutput();
+        $array = [];
+
+        $tree = Tree::fromArray($output, $array);
+        $tree->render();
+
+        $this->assertSame('', trim($output->fetch()));
+    }
 }

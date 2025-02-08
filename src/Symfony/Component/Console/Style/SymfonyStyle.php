@@ -22,7 +22,6 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Helper\Tree;
-use Symfony\Component\Console\Helper\TreeBuilder;
 use Symfony\Component\Console\Helper\TreeNode;
 use Symfony\Component\Console\Helper\TreeStyle;
 use Symfony\Component\Console\Input\InputInterface;
@@ -374,27 +373,29 @@ class SymfonyStyle extends OutputStyle
             ?? throw new RuntimeException('The ProgressBar is not started.');
     }
 
-    public function createTree(TreeNode|array|\Iterator|null $node = null): Tree
+    /**
+     * @param iterable<string, iterable|string|TreeNode> $nodes
+     */
+    public function tree(iterable $nodes, string $root = ''): void
     {
-        $output = $this->output instanceof ConsoleOutputInterface
-            ? $this->output->section()
-            : $this->output;
-
-        return new Tree($output, $node);
+        $this->createTree($nodes, $root)->render();
     }
 
-    public function tree(TreeNode|\Iterator|array $nodes): void
+    /**
+     * @param iterable<string, iterable|string|TreeNode> $nodes
+     */
+    public function createTree(iterable $nodes, string $root = ''): Tree
     {
-        if (\is_array($nodes)) {
-            $nodes = TreeBuilder::fromArray($nodes);
-        } elseif ($nodes instanceof \Iterator) {
-            $nodes = TreeBuilder::fromIterator($nodes);
-        } elseif (!$nodes instanceof TreeNode) {
-            throw new InvalidArgumentException('The nodes should be an array, an instance of TreeNode or an instance of Iterator.');
+        $output = $this->output instanceof ConsoleOutputInterface ? $this->output->section() : $this->output;
+
+        $treeNode = new TreeNode($root ?? '');
+        if (is_array($nodes)) {
+            $treeNode->addChild(fn() => yield from $nodes);
+        } else {
+            $treeNode->addChild(fn() => yield from iterator_to_array($nodes));
         }
 
-        $tree = new Tree($this->output, $nodes, TreeStyle::default());
-        $tree->render();
+        return new Tree($output, $treeNode, TreeStyle::default());
     }
 
     private function autoPrependBlock(): void

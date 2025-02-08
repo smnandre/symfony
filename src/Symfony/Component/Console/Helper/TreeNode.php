@@ -37,6 +37,23 @@ final class TreeNode implements \Countable, \IteratorAggregate
         }
     }
 
+    /**
+     * @param array<string> $array
+     */
+    public static function fromArray(array $array, ?self $node = null): self
+    {
+        $node ??= new self();
+        foreach ($array as $key => $value) {
+            if (\is_array($value)) {
+                $node->addChild(self::fromArray($value, new self($key)));
+            } else {
+                $node->addChild(new self($value));
+            }
+        }
+
+        return $node;
+    }
+
     public function getValue(): string
     {
         return $this->value;
