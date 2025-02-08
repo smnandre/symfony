@@ -97,9 +97,9 @@ final class Tree implements \RecursiveIterator
     /**
      * Traverses the tree with cycle detection.
      *
-     * @return \Generator<string>
+     * @return \Traversable<int, string>
      */
-    private function traverseWithCycleDetection(\RecursiveTreeIterator $iterator, \SplObjectStorage $visited): \Generator
+    private function traverseWithCycleDetection(\RecursiveTreeIterator $iterator, \SplObjectStorage $visited): \Traversable
     {
         foreach ($iterator as $node) {
             $currentNode = $node instanceof TreeNode ? $node : $iterator->getInnerIterator()->current();
