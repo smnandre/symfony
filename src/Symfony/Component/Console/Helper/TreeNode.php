@@ -55,46 +55,6 @@ final class TreeNode implements \Countable, \IteratorAggregate
         return $node;
     }
 
-    /**
-     * @param array<string> $array
-     */
-    public static function fromArray(array $array, ?self $node = null): self
-    {
-        $node ??= new self();
-        foreach ($array as $key => $value) {
-            if (\is_array($value)) {
-                $node->addChild(self::fromArray($value, new self($key)));
-            } else {
-                $node->addChild(new self($value));
-            }
-        }
-
-        return $node;
-    }
-
-    /**
-     * Creates a tree from an iterable.
-     *
-     * @param iterable<string, iterable|string|TreeNode> $iterable
-     */
-    public static function fromIterable(iterable $iterable, ?self $node = null): self
-    {
-        $node ??= new self();
-        foreach ($iterable as $key => $value) {
-            if (\is_array($value)) {
-                $child = new self($key);
-                self::fromIterable($value, $child);
-                $node->addChild($child);
-            } elseif ($value instanceof self) {
-                $node->addChild($value);
-            } else {
-                $node->addChild(new self($value));
-            }
-        }
-
-        return $node;
-    }
-
     public function getValue(): string
     {
         return $this->value;
