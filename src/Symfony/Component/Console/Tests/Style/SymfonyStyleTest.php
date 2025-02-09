@@ -175,7 +175,7 @@ class SymfonyStyleTest extends TestCase
         $output = new BufferedOutput();
         $style = new SymfonyStyle($input, $output);
 
-        $tree = $style->createTree(['A', 'B' => ['B1' => ['B11','B12'], 'B2'], 'C'], 'root');
+        $tree = $style->createTree(['A', 'B' => ['B1' => ['B11', 'B12'], 'B2'], 'C'], 'root');
         $tree->render();
 
         $this->assertSame(<<<TREE
@@ -196,7 +196,7 @@ TREE, trim($output->fetch()));
         $output = new BufferedOutput();
         $style = new SymfonyStyle($input, $output);
 
-        $tree = $style->createTree(['A', 'B' => ['B1' => ['B11','B12'], 'B2'], 'C'], 'root');
+        $tree = $style->createTree(['A', 'B' => ['B1' => ['B11', 'B12'], 'B2'], 'C'], 'root');
         $tree->render();
 
         $this->assertSame($tree = <<<TREE
@@ -211,13 +211,13 @@ root
 TREE, trim($output->fetch()));
     }
 
-   public function testCreateTreeWithIterable()
+    public function testCreateTreeWithIterable()
     {
         $input = $this->createMock(InputInterface::class);
         $output = new BufferedOutput();
         $style = new SymfonyStyle($input, $output);
 
-        $tree = $style->createTree(new \ArrayIterator(['A', 'B' => ['B1' => ['B11','B12'], 'B2'], 'C']), 'root');
+        $tree = $style->createTree(new \ArrayIterator(['A', 'B' => ['B1' => ['B11', 'B12'], 'B2'], 'C']), 'root');
         $tree->render();
 
         $this->assertSame(<<<TREE
