@@ -25,13 +25,8 @@ final class TreeNode implements \Countable, \IteratorAggregate
 
     public function __construct(
         private readonly string $value = '',
-        ?self $parent = null,
         iterable $children = [],
     ) {
-        if ($parent) {
-            $parent->addChild($this);
-        }
-
         foreach ($children as $child) {
             $this->addChild($child);
         }
