@@ -99,26 +99,14 @@ final class TreeHelper implements \RecursiveIterator
         $this->output->writeln($this->node->getValue());
 
         $visited = new \SplObjectStorage();
-        foreach ($this->traverseWithCycleDetection($treeIterator, $visited) as $line) {
-            $this->output->writeln($line);
-        }
-    }
-
-    /**
-     * Traverses the tree with cycle detection.
-     *
-     * @return \Traversable<int, string>
-     */
-    private function traverseWithCycleDetection(\RecursiveTreeIterator $iterator, \SplObjectStorage $visited): \Traversable
-    {
-        foreach ($iterator as $node) {
-            $currentNode = $node instanceof TreeNode ? $node : $iterator->getInnerIterator()->current();
+        foreach ($treeIterator as $node) {
+            $currentNode = $node instanceof TreeNode ? $node : $treeIterator->getInnerIterator()->current();
             if ($visited->contains($currentNode)) {
                 throw new \LogicException(\sprintf('Cycle detected at node: "%s".', $currentNode->getValue()));
             }
             $visited->attach($currentNode);
 
-            yield $node;
+            $this->output->writeln($node);
         }
     }
 }
