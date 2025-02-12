@@ -30,85 +30,37 @@ final class TreeStyle
 
     public static function box(): self
     {
-        return new self(
-            '┃╸ ',
-            '┗╸ ',
-            '',
-            '┃  ',
-            '   ',
-            '',
-        );
+        return new self('┃╸ ', '┗╸ ', '', '┃  ', '   ', '');
     }
 
     public static function boxDouble(): self
     {
-        return new self('╠═ ',
-            '╚═ ',
-            '',
-            '║  ',
-            '  ',
-            '',
-        );
+        return new self('╠═ ', '╚═ ', '', '║  ', '  ', '');
     }
 
     public static function compact(): self
     {
-        return new self(
-            '├ ',
-            '└ ',
-            '',
-            '│ ',
-            '  ',
-            '',
-        );
+        return new self('├ ', '└ ', '', '│ ', '  ', '');
     }
 
     public static function default(): self
     {
-        return new self(
-            '├── ',
-            '└── ',
-            '',
-            '│   ',
-            '   ',
-            '',
-        );
+        return new self('├── ', '└── ', '', '│   ', '   ', '');
     }
 
     public static function light(): self
     {
-        return new self(
-            '|-- ',
-            '`-- ',
-            '',
-            '|   ',
-            '    ',
-            '',
-        );
+        return new self('|-- ', '`-- ', '', '|   ', '    ', '');
     }
 
     public static function minimal(): self
     {
-        return new self(
-            '. ',
-            '. ',
-            '',
-            '. ',
-            '  ',
-            '',
-        );
+        return new self('. ', '. ', '', '. ', '  ', '');
     }
 
     public static function rounded(): self
     {
-        return new self(
-            '├─ ',
-            '╰─ ',
-            '',
-            '│  ',
-            '   ',
-            '',
-        );
+        return new self('├─ ', '╰─ ', '', '│  ', '   ', '');
     }
 
     /**
