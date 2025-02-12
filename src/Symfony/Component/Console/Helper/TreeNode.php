@@ -72,7 +72,7 @@ final class TreeNode implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<TreeNode>
+     * @return \Traversable<int, TreeNode>
      */
     public function getChildren(): \Traversable
     {
@@ -86,7 +86,7 @@ final class TreeNode implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<TreeNode>
+     * @return \Traversable<int, TreeNode>
      */
     public function getIterator(): \Traversable
     {
