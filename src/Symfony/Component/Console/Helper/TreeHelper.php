@@ -22,51 +22,50 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class TreeHelper implements \RecursiveIterator
 {
-    private readonly TreeStyle $style;
+    /**
+     * @var \Iterator<int, TreeNode>
+     */
+    private \Iterator $children;
 
-    private readonly TreeNode $node;
-
-    private \Iterator $childrenIterator;
-
-    public function __construct(
+    private function __construct(
         private readonly OutputInterface $output,
-        ?TreeNode $node = null,
-        ?TreeStyle $style = null,
+        private readonly TreeNode $node,
+        private readonly TreeStyle $style,
     ) {
-        $this->node = $node ?? new TreeNode();
-        $this->style = $style ?? TreeStyle::default();
-        $this->childrenIterator = new \IteratorIterator($this->node->getChildren());
-        $this->childrenIterator->rewind();
+        $this->children = new \IteratorIterator($this->node->getChildren());
+        $this->children->rewind();
     }
 
-    public static function create(OutputInterface $output, iterable $values, ?string $root = null, ?TreeStyle $style = null): self
+    public static function createTree(OutputInterface $output, string|TreeNode|null $root = null, iterable $values = [], ?TreeStyle $style = null): self
     {
-        return new self($output, TreeNode::fromValues($values, new TreeNode($root ?? '')), $style);
+        $node = $root instanceof TreeNode ? $root : new TreeNode($root ?? '');
+
+        return new self($output, TreeNode::fromValues($values, $node), $style ?? TreeStyle::default());
     }
 
     public function current(): TreeNode
     {
-        return $this->childrenIterator->current();
+        return $this->children->current();
     }
 
     public function key(): int
     {
-        return $this->childrenIterator->key();
+        return $this->children->key();
     }
 
     public function next(): void
     {
-        $this->childrenIterator->next();
+        $this->children->next();
     }
 
     public function rewind(): void
     {
-        $this->childrenIterator->rewind();
+        $this->children->rewind();
     }
 
     public function valid(): bool
     {
-        return $this->childrenIterator->valid();
+        return $this->children->valid();
     }
 
     public function hasChildren(): bool

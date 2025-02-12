@@ -388,7 +388,7 @@ class SymfonyStyle extends OutputStyle
     {
         $output = $this->output instanceof ConsoleOutputInterface ? $this->output->section() : $this->output;
 
-        return TreeHelper::create($output, $nodes, $root, TreeStyle::default());
+        return TreeHelper::createTree($output, $root, $nodes, TreeStyle::default());
     }
 
     private function autoPrependBlock(): void

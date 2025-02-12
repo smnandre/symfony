@@ -221,6 +221,6 @@ TREE, trim($output->fetch()));
             )
             ->addChild(new TreeNode('C'));
 
-        return new TreeHelper($output, $root, $style);
+        return TreeHelper::createTree($output, $root, [], $style);
     }
 }
