@@ -44,49 +44,31 @@ final class TreeHelper implements \RecursiveIterator
         return new self($output, TreeNode::fromValues($values, new TreeNode($root ?? '')), $style);
     }
 
-    /**
-     * @internal
-     */
     public function current(): TreeNode
     {
         return $this->childrenIterator->current();
     }
 
-    /**
-     * @internal
-     */
     public function key(): int
     {
         return $this->childrenIterator->key();
     }
 
-    /**
-     * @internal
-     */
     public function next(): void
     {
         $this->childrenIterator->next();
     }
 
-    /**
-     * @internal
-     */
     public function rewind(): void
     {
         $this->childrenIterator->rewind();
     }
 
-    /**
-     * @internal
-     */
     public function valid(): bool
     {
         return $this->childrenIterator->valid();
     }
 
-    /**
-     * @internal
-     */
     public function hasChildren(): bool
     {
         if (null === $current = $this->current()) {
@@ -100,9 +82,6 @@ final class TreeHelper implements \RecursiveIterator
         return false;
     }
 
-    /**
-     * @internal
-     */
     public function getChildren(): \RecursiveIterator
     {
         return new self($this->output, $this->current(), $this->style);
